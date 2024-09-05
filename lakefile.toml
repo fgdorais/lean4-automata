@@ -1,0 +1,10 @@
+name = "Automata"
+defaultTargets = ["Automata"]
+
+[[lean_lib]]
+name = "Automata"
+
+[[require]]
+name = "batteries"
+git = "https://github.com/leanprover-community/batteries"
+rev = "main"
