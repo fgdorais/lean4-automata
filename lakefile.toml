@@ -8,3 +8,8 @@ name = "Automata"
 name = "batteries"
 git = "https://github.com/leanprover-community/batteries"
 rev = "main"
+
+[[require]]
+name = "extra"
+git = "https://github.com/fgdorais/extra4"
+rev = "main"
