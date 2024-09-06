@@ -8,15 +8,11 @@ structure NFA.{u,v} (α : Type v) extends StateType.{u} where
 namespace NFA
 
 section
-variable {α} (m : NFA α) [DecidableEq m.State]
-
--- abbrev states := Finite.toArray (α:=m.State)
-
--- abbrev size := m.states.size
+variable {α} (m : NFA α)
 
 def run : List α → m.State → m.State → Bool
 | [], s, t => decide (s = t)
-| x::xs, s, t => Finite.any fun u => m.trans x s u && run xs u t
+| x::xs, s, t => Find.any fun u => m.trans x s u && run xs u t
 
 theorem run_nil (s t) : m.run [] s t ↔ s = t := by
   unfold run
@@ -74,7 +70,7 @@ theorem run_append {xs ys : List α} {s t} : m.run (xs ++ ys) s t ↔ ∃ u, m.r
         · apply (ih).mpr
           exists u
 
-def accept (xs : List α) : Bool := Finite.any fun (s,t) => m.run xs s t && (m.start s && m.final t)
+def accept (xs : List α) : Bool := Find.any fun (s,t) => m.run xs s t && (m.start s && m.final t)
 
 theorem accept_def (xs : List α) : m.accept xs ↔ ∃ s t, m.run xs s t ∧ m.start s ∧ m.final t := by
   constr

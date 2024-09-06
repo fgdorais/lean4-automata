@@ -1,14 +1,36 @@
 import Batteries
+import Extra
 
 open Batteries
 
+-- TODO: move to Extra
+protected abbrev Find.any [Find α] (p : α → Bool) := (Find.find? p).isSome
+
+-- TODO: move to Extra
+protected abbrev Find.all [Find α] (p : α → Bool) := (Find.find? (!p ·)).isNone
+
+-- TODO: move to Extra
+@[simp] theorem Find.any_iff_exists [Find α] (p : α → Bool) : Find.any p ↔ ∃ x, p x :=
+  Find.find_is_some_iff_exists_true ..
+
+-- TODO: move to Extra
+@[simp] theorem Find.all_iff_forall [Find α] (p : α → Bool) : Find.all p ↔ ∀ x, p x := by
+  rw [Find.all, find_is_none_iff_forall_false]; simp
+
+-- TODO: remove
 macro "constr" : tactic => `(tactic| constructor)
 
-structure StateType.{u} where State : Type u
+structure StateType.{u} where
+  State : Type u
+  [instFind : Find State]
+  [instDecEq : DecidableEq State]
+attribute [instance] StateType.instFind StateType.instDecEq
 
 abbrev Matrix (α) (rows cols : Nat) := Vector (Vector α cols) rows
 
 #exit
+
+-- TODO: move to Batteries?
 
 namespace Vector
 variable {size : Nat} {α : Type _}
