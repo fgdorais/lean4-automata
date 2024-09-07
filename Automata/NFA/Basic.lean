@@ -18,20 +18,20 @@ theorem run_nil (s t) : m.run [] s t ↔ s = t := by
   unfold run
   constr
   · intro h
-    dec_lift at h
+    simp at h
     exact h
   · intro h
-    dec_lift
+    simp
     exact h
 
 theorem run_cons (x : α) (xs : List α) (s t) : m.run (x :: xs) s t ↔ ∃ u, m.trans x s u ∧ m.run xs u t := by
   simp only [run]
   constr
   · intro h
-    dec_lift at h
+    simp at h
     exact h
   · intro h
-    dec_lift
+    simp
     exact h
 
 theorem run_append {xs ys : List α} {s t} : m.run (xs ++ ys) s t ↔ ∃ u, m.run xs s u ∧ m.run ys u t := by
@@ -76,15 +76,15 @@ theorem accept_def (xs : List α) : m.accept xs ↔ ∃ s t, m.run xs s t ∧ m.
   constr
   · intro h
     unfold accept at h
-    dec_lift at h
+    simp at h
     match h with
-    | ⟨⟨s,t⟩,⟨_,_,_⟩⟩ =>
+    | ⟨s,t,_,_,_⟩ =>
       exists s, t
   · intro
     | ⟨s,t,_,_,_⟩ =>
       unfold accept
-      dec_lift
-      exists (s,t)
+      simp
+      exists s, t
 
 end
 
