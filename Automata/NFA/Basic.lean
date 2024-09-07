@@ -9,8 +9,8 @@ namespace NFA
 variable (m : NFA α)
 
 def run : List α → m.State → m.State → Bool
-| [], s, t => decide (s = t)
-| x::xs, s, t => Find.any fun u => m.trans x s u && run xs u t
+  | [], s, t => decide (s = t)
+  | x::xs, s, t => Find.any fun u => m.trans x s u && run xs u t
 
 @[simp] theorem run_nil : m.run [] s t ↔ s = t := by simp [run]
 
@@ -21,7 +21,7 @@ theorem run_append : m.run (xs ++ ys) s t ↔ ∃ u, m.run xs s u ∧ m.run ys u
   | nil => simp
   | cons x xs ih =>
     simp only [List.cons_append, run_cons, ih]
-    constr
+    constructor
     · intro ⟨u, htransx, v, hrunxs, hrunys⟩
       exact ⟨v, ⟨u, htransx, hrunxs⟩, hrunys⟩
     · intro ⟨v, ⟨u, htransx, hrunxs⟩, hrunys⟩
