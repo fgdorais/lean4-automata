@@ -149,14 +149,14 @@ theorem alt_correct (xs : List α) : (m₁ ||| m₂).accept xs = (m₁.accept xs
 theorem alt_sound_left {xs : List α} : m₁.accept xs → (m₁ ||| m₂).accept xs := by
   intro h
   rw [alt_correct]
-  dec_lift
+  simp
   left
   exact h
 
 theorem alt_sound_right {xs : List α} : m₂.accept xs → (m₁ ||| m₂).accept xs := by
   intro h
   rw [alt_correct]
-  dec_lift
+  simp
   right
   exact h
 
@@ -167,7 +167,7 @@ theorem alt_sound {xs : List α} : m₁.accept xs ∨ m₂.accept xs → (m₁ |
 theorem alt_exact {xs : List α} : (m₁ ||| m₂).accept xs → m₁.accept xs ∨ m₂.accept xs := by
   intro h
   rw [alt_correct] at h
-  dec_lift at h
+  simp at h
   exact h
 
 end NFA
