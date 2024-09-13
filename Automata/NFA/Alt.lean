@@ -1,10 +1,12 @@
 import Automata.NFA.Basic
 
 namespace NFA
-variable {α} (m₁ m₂ : NFA α)
+variable (m₁ m₂ : NFA α)
 
 protected def alt : NFA α where
   State := Sum m₁.State m₂.State
+  instDecEq := inferInstance
+  instFind := inferInstance
   start
   | .inl s₁ => m₁.start s₁
   | .inr s₂ => m₂.start s₂
