@@ -1,7 +1,6 @@
 import Automata.NFA.Basic
 
 namespace NFA
-variable {α}
 
 protected def true : NFA α where
   State := Unit
@@ -19,29 +18,24 @@ theorem true_run (xs : List α) (t s : (NFA.true (α:=α)).State) : NFA.true.run
   induction xs generalizing t s with
   | nil => rfl
   | cons x xs ih =>
-    unfold run
-    simp
+    simp [run]
     exists ()
     constructor
     · exact true_trans ..
     · exact ih ..
 
 theorem true_correct (xs : List α) : NFA.true.accept xs = true := by
-  unfold accept
-  simp
-  exists ()
-  exists ()
+  simp [accept]
+  exists () , ()
   constructor
   · exact true_run ..
   · constructor
     · exact true_start ..
     · exact true_final ..
 
-
-
 theorem true_sound {xs : List α} : True → NFA.true.accept xs := by
   intro
-  rw [true_correct]
+  exact true_correct ..
 
 theorem true_exact {xs : List α} : NFA.true.accept xs → True := by
   intro
