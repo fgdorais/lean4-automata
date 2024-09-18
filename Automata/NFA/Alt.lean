@@ -161,8 +161,8 @@ theorem alt_sound_right {xs : List α} : m₂.accept xs → (m₁ ||| m₂).acce
   exact h
 
 theorem alt_sound {xs : List α} : m₁.accept xs ∨ m₂.accept xs → (m₁ ||| m₂).accept xs
-| .inl h => alt_sound_left m₁ m₂ h
-| .inr h => alt_sound_right m₁ m₂ h
+  | .inl h => alt_sound_left m₁ m₂ h
+  | .inr h => alt_sound_right m₁ m₂ h
 
 theorem alt_exact {xs : List α} : (m₁ ||| m₂).accept xs → m₁.accept xs ∨ m₂.accept xs := by
   intro h
