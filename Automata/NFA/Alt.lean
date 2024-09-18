@@ -30,11 +30,9 @@ theorem alt_final_inr (s₂) : (m₁ ||| m₂).final (.inr s₂) = m₂.final s�
 
 theorem alt_trans_inl_inl (x s₁ t₁) : (m₁ ||| m₂).trans x (.inl s₁) (.inl t₁) = m₁.trans x s₁ t₁ := rfl
 
--- Not used
--- theorem alt_trans_inl_inr (x s₁ t₂) : (m₁ ||| m₂).trans x (.inl s₁) (.inr t₂) = false := rfl
+theorem alt_trans_inl_inr (x s₁ t₂) : (m₁ ||| m₂).trans x (.inl s₁) (.inr t₂) = false := rfl
 
--- Not used
--- theorem alt_trans_inr_inl (x s₂ t₁) : (m₁ ||| m₂).trans x (.inr s₂) (.inl t₁) = false := rfl
+theorem alt_trans_inr_inl (x s₂ t₁) : (m₁ ||| m₂).trans x (.inr s₂) (.inl t₁) = false := rfl
 
 theorem alt_trans_inr_inr (x s₂ t₂) : (m₁ ||| m₂).trans x (.inr s₂) (.inr t₂) = m₂.trans x s₂ t₂ := rfl
 
