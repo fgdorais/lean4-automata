@@ -20,23 +20,23 @@ protected def alt : NFA α where
 
 instance : HOr (NFA α) (NFA α) (NFA α) := ⟨NFA.alt⟩
 
-theorem alt_start_inl (s₁) : (m₁ ||| m₂).start (.inl s₁) = m₁.start s₁ := rfl
+@[simp] theorem alt_start_inl (s₁) : (m₁ ||| m₂).start (.inl s₁) = m₁.start s₁ := rfl
 
-theorem alt_start_inr (s₂) : (m₁ ||| m₂).start (.inr s₂) = m₂.start s₂ := rfl
+@[simp] theorem alt_start_inr (s₂) : (m₁ ||| m₂).start (.inr s₂) = m₂.start s₂ := rfl
 
-theorem alt_final_inl (s₁) : (m₁ ||| m₂).final (.inl s₁) = m₁.final s₁ := rfl
+@[simp] theorem alt_final_inl (s₁) : (m₁ ||| m₂).final (.inl s₁) = m₁.final s₁ := rfl
 
-theorem alt_final_inr (s₂) : (m₁ ||| m₂).final (.inr s₂) = m₂.final s₂ := rfl
+@[simp] theorem alt_final_inr (s₂) : (m₁ ||| m₂).final (.inr s₂) = m₂.final s₂ := rfl
 
-theorem alt_trans_inl_inl (x s₁ t₁) : (m₁ ||| m₂).trans x (.inl s₁) (.inl t₁) = m₁.trans x s₁ t₁ := rfl
+@[simp] theorem alt_trans_inl_inl (x s₁ t₁) : (m₁ ||| m₂).trans x (.inl s₁) (.inl t₁) = m₁.trans x s₁ t₁ := rfl
 
-theorem alt_trans_inl_inr (x s₁ t₂) : (m₁ ||| m₂).trans x (.inl s₁) (.inr t₂) = false := rfl
+@[simp] theorem alt_trans_inl_inr (x s₁ t₂) : (m₁ ||| m₂).trans x (.inl s₁) (.inr t₂) = false := rfl
 
-theorem alt_trans_inr_inl (x s₂ t₁) : (m₁ ||| m₂).trans x (.inr s₂) (.inl t₁) = false := rfl
+@[simp] theorem alt_trans_inr_inl (x s₂ t₁) : (m₁ ||| m₂).trans x (.inr s₂) (.inl t₁) = false := rfl
 
-theorem alt_trans_inr_inr (x s₂ t₂) : (m₁ ||| m₂).trans x (.inr s₂) (.inr t₂) = m₂.trans x s₂ t₂ := rfl
+@[simp] theorem alt_trans_inr_inr (x s₂ t₂) : (m₁ ||| m₂).trans x (.inr s₂) (.inr t₂) = m₂.trans x s₂ t₂ := rfl
 
-theorem alt_run_inl_inl (xs : List α) (s₁ t₁) : (m₁ ||| m₂).run xs (.inl s₁) (.inl t₁) ↔ m₁.run xs s₁ t₁ := by
+@[simp] theorem alt_run_inl_inl (xs : List α) (s₁ t₁) : (m₁ ||| m₂).run xs (.inl s₁) (.inl t₁) ↔ m₁.run xs s₁ t₁ := by
   induction xs generalizing s₁ t₁ with
   | nil =>
     rw [(m₁ ||| m₂).run_nil]
@@ -60,7 +60,7 @@ theorem alt_run_inl_inl (xs : List α) (s₁ t₁) : (m₁ ||| m₂).run xs (.in
       rw [←ih] at hrun
       exists Sum.inl u₁
 
-theorem alt_run_inl_inr (xs : List α) (s₁ t₂) : ¬(m₁ ||| m₂).run xs (.inl s₁) (.inr t₂) := by
+@[simp] theorem alt_run_inl_inr (xs : List α) (s₁ t₂) : ¬(m₁ ||| m₂).run xs (.inl s₁) (.inr t₂) := by
   induction xs generalizing s₁ t₂ with
   | nil =>
     rw [(m₁ ||| m₂).run_nil]
@@ -73,7 +73,7 @@ theorem alt_run_inl_inr (xs : List α) (s₁ t₂) : ¬(m₁ ||| m₂).run xs (.
     | inr u₂ => contradiction
     | inl u₁ => exact ih u₁ t₂ hrun
 
-theorem alt_run_inr_inl (xs : List α) (s₂ t₁) : ¬(m₁ ||| m₂).run xs (.inr s₂) (.inl t₁) := by
+@[simp] theorem alt_run_inr_inl (xs : List α) (s₂ t₁) : ¬(m₁ ||| m₂).run xs (.inr s₂) (.inl t₁) := by
   induction xs generalizing s₂ t₁ with
   | nil =>
     rw [(m₁ ||| m₂).run_nil]
@@ -86,7 +86,7 @@ theorem alt_run_inr_inl (xs : List α) (s₂ t₁) : ¬(m₁ ||| m₂).run xs (.
     | inl u₁ => contradiction
     | inr u₂ => exact ih u₂ t₁ hrun
 
-theorem alt_run_inr_inr (xs : List α) (s₂ t₂) : (m₁ ||| m₂).run xs (.inr s₂) (.inr t₂) ↔ m₂.run xs s₂ t₂ := by
+@[simp] theorem alt_run_inr_inr (xs : List α) (s₂ t₂) : (m₁ ||| m₂).run xs (.inr s₂) (.inr t₂) ↔ m₂.run xs s₂ t₂ := by
   induction xs generalizing s₂ t₂ with
   | nil =>
     rw [(m₁ ||| m₂).run_nil]
