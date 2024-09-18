@@ -43,13 +43,13 @@ theorem alt_run_inl_inl (xs : List α) (s₁ t₁) : (m₁ ||| m₂).run xs (.in
   | nil =>
     rw [(m₁ ||| m₂).run_nil]
     rw [m₁.run_nil]
-    constr
+    constructor
     · intro | rfl => rfl
     · intro | rfl => rfl
   | cons x xs ih =>
     rw [(m₁ ||| m₂).run_cons]
     rw [m₁.run_cons]
-    constr
+    constructor
     · intro ⟨u₁, htrans, hrun⟩
       cases u₁ with
       | inr => contradiction
@@ -93,13 +93,13 @@ theorem alt_run_inr_inr (xs : List α) (s₂ t₂) : (m₁ ||| m₂).run xs (.in
   | nil =>
     rw [(m₁ ||| m₂).run_nil]
     rw [m₂.run_nil]
-    constr
+    constructor
     · intro | rfl => rfl
     · intro | rfl => rfl
   | cons x xs ih =>
     rw [(m₁ ||| m₂).run_cons]
     rw [m₂.run_cons]
-    constr
+    constructor
     · intro ⟨u₂, htrans, hrun⟩
       cases u₂ with
       | inl => contradiction
