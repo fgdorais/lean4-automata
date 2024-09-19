@@ -8,30 +8,23 @@ protected def true : NFA α where
   trans _ _ _ := true
   final _ := true
 
-theorem true_start (s : (NFA.true (α:=α)).State) : NFA.true.start s = true := rfl
+@[simp] theorem true_start (s : (NFA.true (α:=α)).State) : NFA.true.start s = true := rfl
 
-theorem true_final (s : (NFA.true (α:=α)).State) : NFA.true.final s = true := rfl
+@[simp] theorem true_final (s : (NFA.true (α:=α)).State) : NFA.true.final s = true := rfl
 
-theorem true_trans (x : α) (t s : (NFA.true (α:=α)).State) : NFA.true.trans x t s = true := rfl
+@[simp] theorem true_trans (x : α) (t s : (NFA.true (α:=α)).State) : NFA.true.trans x t s = true := rfl
 
-theorem true_run (xs : List α) (t s : (NFA.true (α:=α)).State) : NFA.true.run xs t s = true := by
+@[simp] theorem true_run (xs : List α) (t s : (NFA.true (α:=α)).State) : NFA.true.run xs t s = true := by
   induction xs generalizing t s with
   | nil => rfl
   | cons x xs ih =>
     simp [run]
     exists ()
-    constructor
-    · exact true_trans ..
-    · exact ih ..
+    exact ih ..
 
-theorem true_correct (xs : List α) : NFA.true.accept xs = true := by
-  simp [accept]
+@[simp] theorem true_correct (xs : List α) : NFA.true.accept xs = true := by
+  simp [accept, -exists_prop']
   exists () , ()
-  constructor
-  · exact true_run ..
-  · constructor
-    · exact true_start ..
-    · exact true_final ..
 
 theorem true_sound {xs : List α} : True → NFA.true.accept xs := by
   intro
