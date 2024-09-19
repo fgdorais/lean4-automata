@@ -111,39 +111,36 @@ instance : HOr (NFA α) (NFA α) (NFA α) := ⟨NFA.alt⟩
       exists Sum.inr u₂
 
 theorem alt_correct (xs : List α) : (m₁ ||| m₂).accept xs = (m₁.accept xs || m₂.accept xs) := by
-  unfold accept
-  dec_lift
-  constr
+  simp only [accept]
+  rw [Bool.eq_iff_iff]
+  simp
+  constructor
   · intro
-    | ⟨(Sum.inl s₁, Sum.inl t₁), hrun, hstart, hfinal⟩ =>
+    | ⟨Sum.inl s₁, Sum.inl t₁, hrun, hstart, hfinal⟩  =>
       left
-      rw [alt_run_inl_inl] at hrun
-      rw [alt_start_inl] at hstart
-      rw [alt_final_inl] at hfinal
-      exists (s₁, t₁)
-    | ⟨(Sum.inl s₁, Sum.inr t₂), hrun, _, _⟩ =>
+      simp at hrun hstart hfinal
+      exists s₁, t₁
+    | ⟨Sum.inl s₁, Sum.inr t₂, hrun, _, _⟩ =>
       absurd hrun
       apply alt_run_inl_inr
-    | ⟨(Sum.inr s₂, Sum.inl t₁), hrun, _, _⟩ =>
+    | ⟨Sum.inr s₂, Sum.inl t₁, hrun, _, _⟩ =>
       absurd hrun
       apply alt_run_inr_inl
-    | ⟨(Sum.inr s₂, Sum.inr t₂), hrun, hstart, hfinal⟩ =>
+    | ⟨Sum.inr s₂, Sum.inr t₂, hrun, hstart, hfinal⟩ =>
       right
-      rw [alt_run_inr_inr] at hrun
-      rw [alt_start_inr] at hstart
-      rw [alt_final_inr] at hfinal
-      exists (s₂,t₂)
+      simp at hrun hstart hfinal
+      exists s₂,t₂
   · intro
-    | Or.inl ⟨(s₁, t₁), hrun, hstart, hfinal⟩ =>
+    | Or.inl ⟨s₁, t₁, hrun, hstart, hfinal⟩ =>
       rw [←alt_run_inl_inl] at hrun
       rw [←alt_start_inl] at hstart
       rw [←alt_final_inl] at hfinal
-      exists (Sum.inl s₁, Sum.inl t₁)
-    | Or.inr ⟨(s₂, t₂), hrun, hstart, hfinal⟩ =>
+      exists Sum.inl s₁, Sum.inl t₁
+    | Or.inr ⟨s₂, t₂, hrun, hstart, hfinal⟩ =>
       rw [←alt_run_inr_inr] at hrun
       rw [←alt_start_inr] at hstart
       rw [←alt_final_inr] at hfinal
-      exists (Sum.inr s₂, Sum.inr t₂)
+      exists Sum.inr s₂, Sum.inr t₂
 
 
 theorem alt_sound_left {xs : List α} : m₁.accept xs → (m₁ ||| m₂).accept xs := by
