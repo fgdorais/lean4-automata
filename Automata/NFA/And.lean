@@ -75,7 +75,6 @@ theorem and_correct (xs : List α) : (m₁ &&& m₂).accept xs = (m₁.accept xs
   · intro h
     match h with
     | ⟨(s₁₁, s₁₂), (s₂₁, s₂₂), hrun, hstart, hfinal⟩  =>
-    -- |⟨⟨⟨s₁₁, s₁₂⟩,⟨s₂₁, s₂₂⟩⟩, ⟨hrun, hstart, hfinal⟩⟩ =>
       rw [and_start] at hstart
       rw [and_final] at hfinal
       rw [and_run] at hrun
