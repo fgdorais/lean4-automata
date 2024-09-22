@@ -26,12 +26,8 @@ protected def true : NFA α where
   simp [accept, -exists_prop']
   exists () , ()
 
-theorem true_sound {xs : List α} : True → NFA.true.accept xs := by
-  intro
-  exact true_correct ..
+theorem true_sound {xs : List α} : True → NFA.true.accept xs := by simp
 
-theorem true_exact {xs : List α} : NFA.true.accept xs → True := by
-  intro
-  trivial
+theorem true_exact {xs : List α} : NFA.true.accept xs → True := by simp
 
 end NFA
