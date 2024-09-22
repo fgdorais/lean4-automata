@@ -11,10 +11,9 @@ protected def false : NFA α where
   trans _ := (nomatch .)
 
 @[simp] theorem false_correct (xs : List α) : NFA.false.accept xs = false := by
-  simp only [accept]
-  rw[Bool.eq_iff_iff]
-  simp
-  intro
+  rw [Bool.eq_false_iff]
+  simp [accept]
+  intros
   contradiction
 
 theorem false_sound {xs : List α} : False → NFA.false.accept xs := by simp
