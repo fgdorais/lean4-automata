@@ -110,7 +110,7 @@ instance : HOr (NFA α) (NFA α) (NFA α) := ⟨NFA.alt⟩
       rw [←ih] at hrun
       exists Sum.inr u₂
 
-theorem alt_correct (xs : List α) : (m₁ ||| m₂).accept xs = (m₁.accept xs || m₂.accept xs) := by
+@[simp] theorem alt_correct (xs : List α) : (m₁ ||| m₂).accept xs = (m₁.accept xs || m₂.accept xs) := by
   simp only [accept]
   rw [Bool.eq_iff_iff]
   simp
