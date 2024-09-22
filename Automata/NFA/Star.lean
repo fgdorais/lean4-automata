@@ -219,7 +219,7 @@ protected def star : NFA α where
         · apply star_run_append
           · simp [accept]
             exists s₁, s₂
-          · simp only [NFA.star] at hs₁₁ ⊢
+          · simp [NFA.star] at hs₁₁ ⊢
             split at hs₁₁
             next => contradiction
             next j =>
