@@ -2,7 +2,7 @@ import Automata.NFA.Basic
 
 namespace NFA
 universe u₁ u₂
-variable {α} (m₁ : NFA.{u₁} α) (m₂ : NFA.{u₂} α)
+variable (m₁ : NFA.{u₁} α) (m₂ : NFA.{u₂} α)
 
 protected def and : NFA α where
   State := m₁.State × m₂.State
