@@ -17,13 +17,8 @@ protected def false : NFA α where
   intro
   contradiction
 
-@[simp] theorem false_sound {xs : List α} : False → NFA.false.accept xs := by
-  intro
-  contradiction
+theorem false_sound {xs : List α} : False → NFA.false.accept xs := by simp
 
-@[simp] theorem false_exact {xs : List α} : NFA.false.accept xs → False := by
-  intro h
-  rw [false_correct] at h
-  contradiction
+theorem false_exact {xs : List α} : NFA.false.accept xs → False := by simp
 
 end NFA
