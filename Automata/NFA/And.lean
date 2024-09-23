@@ -67,7 +67,7 @@ instance : HAnd (NFA α) (NFA α) (NFA α) := ⟨NFA.and⟩
         · exact hrun₁
         · exact hrun₂
 
-theorem and_correct (xs : List α) : (m₁ &&& m₂).accept xs = (m₁.accept xs && m₂.accept xs) := by
+@[simp] theorem and_correct (xs : List α) : (m₁ &&& m₂).accept xs = (m₁.accept xs && m₂.accept xs) := by
   unfold accept
   rw [Bool.eq_iff_iff]
   simp
