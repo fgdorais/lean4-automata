@@ -12,7 +12,7 @@ protected def false : NFA α where
 
 @[simp] theorem false_correct (xs : List α) : NFA.false.accept xs = false := by
   rw [Bool.eq_false_iff]
-  simp [accept]
+  simp
   intros
   contradiction
 

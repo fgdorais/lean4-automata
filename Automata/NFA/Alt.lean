@@ -145,17 +145,11 @@ instance : HOr (NFA α) (NFA α) (NFA α) := ⟨NFA.alt⟩
 
 theorem alt_sound_left {xs : List α} : m₁.accept xs → (m₁ ||| m₂).accept xs := by
   intro h
-  rw [alt_correct]
-  simp
-  left
-  exact h
+  simp [h]
 
 theorem alt_sound_right {xs : List α} : m₂.accept xs → (m₁ ||| m₂).accept xs := by
   intro h
-  rw [alt_correct]
-  simp
-  right
-  exact h
+  simp [h]
 
 theorem alt_sound {xs : List α} : m₁.accept xs ∨ m₂.accept xs → (m₁ ||| m₂).accept xs
   | .inl h => alt_sound_left m₁ m₂ h
@@ -163,8 +157,6 @@ theorem alt_sound {xs : List α} : m₁.accept xs ∨ m₂.accept xs → (m₁ |
 
 theorem alt_exact {xs : List α} : (m₁ ||| m₂).accept xs → m₁.accept xs ∨ m₂.accept xs := by
   intro h
-  rw [alt_correct] at h
-  simp at h
-  exact h
+  simp_all
 
 end NFA
