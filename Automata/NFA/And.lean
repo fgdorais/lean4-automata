@@ -12,17 +12,17 @@ protected def and : NFA α where
 
 instance : HAnd (NFA α) (NFA α) (NFA α) := ⟨NFA.and⟩
 
-@[scoped simp] theorem and_start (s₁ : m₁.State) (s₂ : m₂.State) :
-(m₁ &&& m₂).start (s₁,s₂) = (m₁.start s₁ && m₂.start s₂) := rfl
+@[simp] theorem and_start (s₁ : m₁.State) (s₂ : m₂.State) :
+    (m₁ &&& m₂).start (s₁,s₂) = (m₁.start s₁ && m₂.start s₂) := rfl
 
-@[scoped simp] theorem and_final (s₁ : m₁.State) (s₂ : m₂.State) :
-(m₁ &&& m₂).final (s₁,s₂) = (m₁.final s₁ && m₂.final s₂) := rfl
+@[simp] theorem and_final (s₁ : m₁.State) (s₂ : m₂.State) :
+    (m₁ &&& m₂).final (s₁,s₂) = (m₁.final s₁ && m₂.final s₂) := rfl
 
-@[scoped simp] theorem and_trans (x : α) (t₁ s₁ : m₁.State) (t₂ s₂ : m₂.State) :
-(m₁ &&& m₂).trans x (t₁,t₂) (s₁,s₂) = (m₁.trans x t₁ s₁ && m₂.trans x t₂ s₂) := rfl
+@[simp] theorem and_trans (x : α) (t₁ s₁ : m₁.State) (t₂ s₂ : m₂.State) :
+    (m₁ &&& m₂).trans x (t₁,t₂) (s₁,s₂) = (m₁.trans x t₁ s₁ && m₂.trans x t₂ s₂) := rfl
 
-@[scoped simp] theorem and_run (xs : List α) (t₁ s₁ : m₁.State) (t₂ s₂ : m₂.State) :
-(m₁ &&& m₂).run xs (t₁, t₂) (s₁, s₂) = (m₁.run xs t₁ s₁ && m₂.run xs t₂ s₂) := by
+@[simp] theorem and_run (xs : List α) (t₁ s₁ : m₁.State) (t₂ s₂ : m₂.State) :
+    (m₁ &&& m₂).run xs (t₁, t₂) (s₁, s₂) = (m₁.run xs t₁ s₁ && m₂.run xs t₂ s₂) := by
   induction xs generalizing t₁ t₂ s₁ s₂ with
   | nil =>
     rw [Bool.eq_iff_iff]
