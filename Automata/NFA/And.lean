@@ -133,4 +133,9 @@ theorem and_exact_right {xs : List α} : (m₁ &&& m₂).accept xs → m₂.acce
   simp at h
   exact h.right
 
+theorem and_exact : (m₁ &&& m₂).accept xs → m₁.accept xs ∧ m₂.accept xs := by
+  intro h
+  simp at h
+  exact h
+
 end NFA
