@@ -115,27 +115,24 @@ instance : HAnd (NFA α) (NFA α) (NFA α) := ⟨NFA.and⟩
 
 theorem and_sound {xs : List α} : m₁.accept xs → m₂.accept xs → (m₁ &&& m₂).accept xs := by
   intro hleft hright
-  rw [and_correct]
-  simp
+  simp only [and_correct, Bool.and_eq_true]
   constructor
   · exact hleft
   · exact hright
 
 theorem and_exact_left {xs : List α} : (m₁ &&& m₂).accept xs → m₁.accept xs := by
   intro h
-  rw [and_correct] at h
-  simp at h
+  simp only [and_correct, Bool.and_eq_true] at h
   exact h.left
 
 theorem and_exact_right {xs : List α} : (m₁ &&& m₂).accept xs → m₂.accept xs := by
   intro h
-  rw [and_correct] at h
-  simp at h
+  simp only [and_correct, Bool.and_eq_true] at h
   exact h.right
 
 theorem and_exact : (m₁ &&& m₂).accept xs → m₁.accept xs ∧ m₂.accept xs := by
   intro h
-  simp at h
+  simp only [and_correct, Bool.and_eq_true] at h
   exact h
 
 end NFA
