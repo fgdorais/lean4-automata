@@ -55,17 +55,7 @@ instance : HAnd (NFA α) (NFA α) (NFA α) := ⟨NFA.and⟩
         · exact hrun.2
     · intro ⟨⟨u₁, htrans₁, hrun₁⟩, ⟨u₂, htrans₂, hrun₂⟩⟩
       exists (u₁, u₂)
-      constructor
-      · rw [and_trans]
-        simp
-        constructor
-        · exact htrans₁
-        · exact htrans₂
-      · rw [ih]
-        simp
-        constructor
-        · exact hrun₁
-        · exact hrun₂
+      simp [*]
 
 @[simp] theorem and_correct (xs : List α) : (m₁ &&& m₂).accept xs = (m₁.accept xs && m₂.accept xs) := by
   unfold accept
@@ -94,31 +84,11 @@ instance : HAnd (NFA α) (NFA α) (NFA α) := ⟨NFA.and⟩
           · exact hfinal.2
   · intro ⟨⟨s₁₁, s₁₂, hrun₁, hstart₁, hfinal₁⟩, ⟨s₂₁, s₂₂, hrun₂, hstart₂, hfinal₂⟩⟩
     exists (s₁₁, s₂₁), (s₁₂, s₂₂)
-    constructor
-    · rw [and_run]
-      simp
-      constructor
-      · exact hrun₁
-      · exact hrun₂
-    · rw [and_start]
-      constructor
-      · simp
-        constructor
-        · exact hstart₁
-        · exact hstart₂
-      · rw [and_final]
-        simp
-        constructor
-        · exact hfinal₁
-        · exact hfinal₂
+    simp [*]
 
 
 theorem and_sound {xs : List α} : m₁.accept xs → m₂.accept xs → (m₁ &&& m₂).accept xs := by
-  intro hleft hright
-  simp only [and_correct, Bool.and_eq_true]
-  constructor
-  · exact hleft
-  · exact hright
+  intros; simp [*]
 
 theorem and_exact_left {xs : List α} : (m₁ &&& m₂).accept xs → m₁.accept xs := by
   intro h
