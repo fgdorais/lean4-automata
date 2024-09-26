@@ -134,23 +134,21 @@ protected def star : NFA α where
     simp at hrun ⊢
     match hrun with
     | ⟨u, htrans, hrun⟩ =>
-      by_cases xs = [] with
-      | isTrue hxs =>
+      if hxs: xs = [] then
         cases hxs
         unfold run at hrun
-        dec_lift at hrun
+        simp at hrun
         cases hrun
         exists none
-        constr
+        constructor
         · unfold NFA.star
-          dec_lift
+          simp
           exists t
         · unfold run
-          apply decide_eq_true
-          rfl
-      | isFalse hxs =>
+          simp
+      else
         exists (some u)
-        constr
+        constructor
         · exact htrans
         · apply H
           · exact hrun
@@ -210,7 +208,7 @@ protected def star : NFA α where
   simp at h h₁ ⊢
   exists none, none
   match h with
-  | ⟨s, hfinal, hstart⟩ =>
+  | ⟨t₁, t₂, hfinal, hstart⟩ =>
     match h₁ with
     | ⟨s₁, s₂, hfinal₁, ⟨hstart₁₁, hfinal₁₂⟩⟩ =>
       match hstart with
@@ -222,12 +220,11 @@ protected def star : NFA α where
           · simp [NFA.star] at hs₁₁ ⊢
             split at hs₁₁
             next => contradiction
-            next j =>
+            next =>
               simp only [NFA.star] at hs₁₂ ⊢
               split at hs₁₂
               next => contradiction
-              next k =>
-                rw [j, k] at hfinal
+              next =>
                 exact hfinal
         · constructor
           · rfl
