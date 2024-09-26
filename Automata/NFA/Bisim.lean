@@ -2,7 +2,7 @@ import Automata.NFA.Basic
 
 namespace NFA
 
-structure Bisim {α} (m₁ m₂ : NFA α) where
+structure Bisim (m₁ m₂ : NFA α) where
   rel : m₁.State → m₂.State → Bool
   start {s₁ s₂} : rel s₁ s₂ → m₁.start s₁ = m₂.start s₂
   transLR {s₁ s₂ t₁ x} : rel s₁ s₂ → m₁.trans x s₁ t₁ → Find.any (λ t₂ => rel t₁ t₂ && m₂.trans x s₂ t₂)
