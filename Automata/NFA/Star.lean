@@ -1,7 +1,7 @@
 import Automata.NFA.Basic
 
 namespace NFA
-variable {α} (m : NFA α)
+variable (m : NFA α)
 
 protected def star : NFA α where
   State := Option m.State
