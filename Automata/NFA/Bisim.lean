@@ -19,11 +19,11 @@ protected def id : Bisim m m where
     simp at h
     rw [h]
   transLR := by
-    intro _ _ t _ h ht
+    intro _ _ _ _ h ht
     simp at h ⊢
     rw [← h, ht]
   transRL := by
-    intro _ _ t _ h ht
+    intro _ _ _ _ h ht
     simp at h ⊢
     rw [h, ht]
   final {s₁ s₂} := by
