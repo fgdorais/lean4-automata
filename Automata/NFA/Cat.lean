@@ -6,15 +6,17 @@ variable (m₁ : NFA.{u₁} α) (m₂ : NFA.{u₂} α)
 
 protected def cat : NFA α where
   State := Sum m₁.State m₂.State
+  instDecEq := inferInstance
+  instFind := inferInstance
   start
   | .inl s₁ => m₁.start s₁
-  | .inr s₂ => m₂.start s₂ && Finite.any fun s₁ => m₁.start s₁ && m₁.final s₁
+  | .inr s₂ => m₂.start s₂ && Find.any fun s₁ => m₁.start s₁ && m₁.final s₁
   final
-  | .inl s₁ => m₁.final s₁ && Finite.any fun s₂ => m₂.start s₂ && m₂.final s₂
+  | .inl s₁ => m₁.final s₁ && Find.any fun s₂ => m₂.start s₂ && m₂.final s₂
   | .inr s₂ => m₂.final s₂
   trans
   | x, .inl s₁, .inl t₁ => m₁.trans x s₁ t₁
-  | x, .inl s₁, .inr t₂ => m₁.final s₁ && Finite.any fun s₂ => m₂.start s₂ && m₂.trans x s₂ t₂
+  | x, .inl s₁, .inr t₂ => m₁.final s₁ && Find.any fun s₂ => m₂.start s₂ && m₂.trans x s₂ t₂
   | _, .inr _, .inl _ => false
   | x, .inr s₂, .inr t₂ => m₂.trans x s₂ t₂
 
