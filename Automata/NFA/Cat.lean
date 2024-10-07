@@ -126,7 +126,7 @@ instance : HAppend (NFA α) (NFA α) (NFA α) := ⟨NFA.cat⟩
   induction xs generalizing s₁ t₂ with
   | nil =>
     simp only [List.nil_append]
-    cases hrun₁
+    simp at hrun₁
     cases ys with
     | nil => contradiction
     | cons y ys =>
@@ -137,7 +137,8 @@ instance : HAppend (NFA α) (NFA α) (NFA α) := ⟨NFA.cat⟩
         constructor
         · simp
           constructor
-          · exact hfinal
+          · rw [hrun₁]
+            exact hfinal
           · exists s₂
         · simp
           exact hrun
