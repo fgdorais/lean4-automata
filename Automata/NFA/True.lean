@@ -18,11 +18,11 @@ protected def true : NFA α where
   induction xs generalizing t s with
   | nil => rfl
   | cons x xs ih =>
-    simp [ih, -exists_prop']
+    simp [ih]
     exists ()
 
 @[simp] theorem true_correct (xs : List α) : NFA.true.accept xs = true := by
-  simp [-exists_prop']
+  simp
   exists (), ()
 
 theorem true_sound {xs : List α} : True → NFA.true.accept xs := by simp
