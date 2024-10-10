@@ -9,17 +9,13 @@ def proj : NFA β where
   trans y s t := Find.any fun x => f x = y && m.trans x s t
   final s := m.final s
 
-@[scoped simp] theorem proj_start :
-  (m.proj f).start s = m.start s := rfl
+@[scoped simp] theorem proj_start : (m.proj f).start s = m.start s := rfl
 
-@[scoped simp] theorem proj_final :
-  (m.proj f).final s = m.final s := rfl
+@[scoped simp] theorem proj_final : (m.proj f).final s = m.final s := rfl
 
-@[scoped simp] theorem proj_trans :
-  (m.proj f).trans y s t = Find.any (λ x : α => f x = y && m.trans x s t) := rfl
+@[scoped simp] theorem proj_trans : (m.proj f).trans y s t = Find.any (λ x : α => f x = y && m.trans x s t) := rfl
 
-@[simp] theorem proj_run :
-  m.run xs s t = true → (m.proj f).run (xs.map f) s t = true := by
+@[simp] theorem proj_run : m.run xs s t = true → (m.proj f).run (xs.map f) s t = true := by
   induction xs generalizing s t with
   | nil => simp
   | cons x xs ih =>
@@ -33,8 +29,7 @@ def proj : NFA β where
       · apply ih
         exact hrun
 
-@[simp] theorem proj_nur (s t : m.State) :
-  (m.proj f).run ys s t = true → ∃ (xs : List α), ys = xs.map f ∧ m.run xs s t = true := by
+@[simp] theorem proj_nur (s t : m.State) : (m.proj f).run ys s t = true → ∃ (xs : List α), ys = xs.map f ∧ m.run xs s t = true := by
   induction ys generalizing s t with
   | nil =>
     intro h
