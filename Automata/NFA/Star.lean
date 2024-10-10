@@ -155,7 +155,7 @@ protected def star : NFA α where
   by_cases hx: xs = []
   · cases hx
     match h with
-    | ⟨_, _, ⟨_, _⟩⟩ =>
+    | ⟨_, _, _, _⟩ =>
       constructor
       · simp
       · constructor
