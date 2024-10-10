@@ -29,7 +29,7 @@ def proj : NFA β where
       · apply ih
         exact hrun
 
-@[simp] theorem proj_nur (s t : m.State) : (m.proj f).run ys s t = true → ∃ (xs : List α), ys = xs.map f ∧ m.run xs s t = true := by
+@[simp] theorem proj_nur : (m.proj f).run ys s t = true → ∃ (xs : List α), ys = xs.map f ∧ m.run xs s t = true := by
   induction ys generalizing s t with
   | nil =>
     intro h
@@ -44,7 +44,7 @@ def proj : NFA β where
     simp at h
     match h with
     | ⟨u, htrans, hrun⟩ =>
-      match ih u t hrun with
+      match ih hrun with
       | ⟨xs, hfxs, hrun₁⟩ =>
         match htrans with
         | ⟨x, hfx, htrans₁⟩ =>
@@ -61,7 +61,7 @@ def proj : NFA β where
   | ⟨s₁, s₂, hsrun, hsfinal⟩ =>
     match hsfinal with
     | ⟨hsrstart, hsrfinal⟩ =>
-      match proj_nur f m s₁ s₂ hsrun with
+      match proj_nur f m hsrun with
       | ⟨xs, hxsmap, hxsrun⟩ =>
       exists xs
       constructor
