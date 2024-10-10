@@ -9,16 +9,16 @@ def proj : NFA β where
   trans y s t := Find.any fun x => f x = y && m.trans x s t
   final s := m.final s
 
-@[scoped simp] theorem proj_start (s : m.State) :
+@[scoped simp] theorem proj_start :
   (m.proj f).start s = m.start s := rfl
 
-@[scoped simp] theorem proj_final (s : m.State) :
+@[scoped simp] theorem proj_final :
 (m.proj f).final s = m.final s := rfl
 
-@[scoped simp] theorem proj_trans (s t : m.State) :
+@[scoped simp] theorem proj_trans :
 (m.proj f).trans y s t = Find.any (λ x : α => f x = y && m.trans x s t) := rfl
 
-@[simp] theorem proj_run (xs : List α) (s t : m.State) :
+@[simp] theorem proj_run :
 m.run xs s t = true → (m.proj f).run (xs.map f) s t = true := by
   induction xs generalizing s t with
   | nil => simp
@@ -38,18 +38,14 @@ m.run xs s t = true → (m.proj f).run (xs.map f) s t = true := by
   induction ys generalizing s t with
   | nil =>
     intro h
-    unfold proj at h
-    unfold run at h
     simp at h
     exists []
     constructor
     · rfl
-    · unfold run
-      simp
+    · simp
       exact h
   | cons y ys ih =>
     intro h
-    unfold run at h ⊢
     simp at h
     match h with
     | ⟨u, htrans, hrun⟩ =>
@@ -63,9 +59,8 @@ m.run xs s t = true → (m.proj f).run (xs.map f) s t = true := by
           · simp
             exists u
 
-@[simp] theorem proj_exact (ys : List β) : (m.proj f).accept ys → ∃ (xs : List α), xs.map f = ys ∧ m.accept xs := by
+@[simp] theorem proj_exact : (m.proj f).accept ys → ∃ (xs : List α), xs.map f = ys ∧ m.accept xs := by
   intro h
-  unfold accept at h
   simp at h
   match h with
   | ⟨s₁, s₂, hsrun, hsfinal⟩ =>
@@ -79,7 +74,7 @@ m.run xs s t = true → (m.proj f).run (xs.map f) s t = true := by
       · simp
         exists s₁, s₂
 
-theorem proj_sound (xs : List α) : m.accept xs → (m.proj f).accept (xs.map f) := by
+theorem proj_sound : m.accept xs → (m.proj f).accept (xs.map f) := by
   intro h
   simp at h ⊢
   match h with
