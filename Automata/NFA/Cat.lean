@@ -74,7 +74,7 @@ instance : HAppend (NFA α) (NFA α) (NFA α) := ⟨NFA.cat⟩
     | ⟨Sum.inl u₁, htrans, _⟩ => exact cat_trans_inr_inl m₁ m₂ htrans
     | ⟨Sum.inr u₂, _, hrun⟩ => exact ih hrun
 
-@[simp] theorem cat_run_inr_inr (xs : List α) (s₂ t₂) : (m₁ ++ m₂).run xs (.inr s₂) (.inr t₂) ↔ m₂.run xs s₂ t₂ := by
+@[simp] theorem cat_run_inr_inr : (m₁ ++ m₂).run xs (.inr s₂) (.inr t₂) ↔ m₂.run xs s₂ t₂ := by
   induction xs generalizing s₂ t₂ with
   | nil =>
     simp
@@ -121,7 +121,7 @@ instance : HAppend (NFA α) (NFA α) (NFA α) := ⟨NFA.cat⟩
   intro hxs hrun₁ hrun₂ hfinal hstart
   induction xs generalizing s₁ t₂ with
   | nil =>
-    simp only [List.nil_append]
+    simp
     simp at hrun₁
     cases ys with
     | nil => contradiction
