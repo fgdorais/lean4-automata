@@ -206,7 +206,7 @@ protected def star : NFA α where
 | _, Or.inl rfl => m.star_sound_nil
 | _, Or.inr ⟨_, _, rfl, hxs, hys⟩ => m.star_sound_append hxs hys
 
-@[simp] theorem star_nur_append (zs s) : m.star.run zs (some s) none → ∃ xs ys t, xs ≠ [] ∧ zs = xs ++ ys ∧ m.final t ∧ m.run xs s t ∧ m.star.run ys none none := by
+@[simp] theorem star_nur_append : m.star.run zs (some s) none → ∃ xs ys t, xs ≠ [] ∧ zs = xs ++ ys ∧ m.final t ∧ m.run xs s t ∧ m.star.run ys none none := by
   intro hrun
   induction zs generalizing s with
   | nil =>
@@ -215,7 +215,7 @@ protected def star : NFA α where
     simp at hrun
     match hrun with
     | ⟨some s, htrans, hrun⟩ =>
-      match H s hrun with
+      match H hrun with
       | ⟨xs, ys, t, _, hz, hstart, hxrun, hyrun⟩ =>
         exists z::xs
         exists ys
@@ -255,7 +255,7 @@ protected def star : NFA α where
   rw [star_accept] at h
   match star_unstart m zs hz h with
   | ⟨s, hsfinal, hsrun⟩ =>
-    match star_nur_append m zs s hsrun with
+    match star_nur_append m hsrun with
     | ⟨xs, ys, t, hx, hxy, hstart, hfinal, hrun⟩ =>
       exists xs
       exists ys
