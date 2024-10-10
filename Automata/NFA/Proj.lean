@@ -13,13 +13,13 @@ def proj : NFA β where
   (m.proj f).start s = m.start s := rfl
 
 @[scoped simp] theorem proj_final :
-(m.proj f).final s = m.final s := rfl
+  (m.proj f).final s = m.final s := rfl
 
 @[scoped simp] theorem proj_trans :
-(m.proj f).trans y s t = Find.any (λ x : α => f x = y && m.trans x s t) := rfl
+  (m.proj f).trans y s t = Find.any (λ x : α => f x = y && m.trans x s t) := rfl
 
 @[simp] theorem proj_run :
-m.run xs s t = true → (m.proj f).run (xs.map f) s t = true := by
+  m.run xs s t = true → (m.proj f).run (xs.map f) s t = true := by
   induction xs generalizing s t with
   | nil => simp
   | cons x xs ih =>
@@ -33,8 +33,8 @@ m.run xs s t = true → (m.proj f).run (xs.map f) s t = true := by
       · apply ih
         exact hrun
 
-@[simp] theorem proj_nur (ys : List β) (s t : m.State) :
-(m.proj f).run ys s t = true → ∃ (xs : List α), ys = xs.map f ∧ m.run xs s t = true := by
+@[simp] theorem proj_nur (s t : m.State) :
+  (m.proj f).run ys s t = true → ∃ (xs : List α), ys = xs.map f ∧ m.run xs s t = true := by
   induction ys generalizing s t with
   | nil =>
     intro h
@@ -66,7 +66,7 @@ m.run xs s t = true → (m.proj f).run (xs.map f) s t = true := by
   | ⟨s₁, s₂, hsrun, hsfinal⟩ =>
     match hsfinal with
     | ⟨hsrstart, hsrfinal⟩ =>
-      match proj_nur f m ys s₁ s₂ hsrun with
+      match proj_nur f m s₁ s₂ hsrun with
       | ⟨xs, hxsmap, hxsrun⟩ =>
       exists xs
       constructor
