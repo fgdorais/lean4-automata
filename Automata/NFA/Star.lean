@@ -35,10 +35,8 @@ protected def star : NFA α where
 @[simp] theorem star_trans_none_some (x t) : m.star.trans x none (some t) ↔ ∃ s, m.trans x s t ∧ m.start s := by
   simp [NFA.star]
 
-
 @[simp] theorem star_trans_none_none (x) : m.star.trans x none none ↔ ∃ s t, m.trans x s t ∧ m.start s ∧ m.final t:= by
   simp [NFA.star]
-
 
 @[simp] theorem star_restart : xs ≠ [] → m.start s → m.star.run xs (some s) t → m.star.run xs none t := by
   intro hxs hstart hrun
@@ -51,7 +49,7 @@ protected def star : NFA α where
       simp at htrans
       exists some u
       constructor
-      · simp
+      · simp only [star_trans_none_some]
         exists s
       · exact hrun
     | ⟨none, htrans, hrun⟩ =>
@@ -60,22 +58,22 @@ protected def star : NFA α where
       | ⟨u, htrans, hfinal⟩ =>
         exists none
         constructor
-        · simp
+        · simp only [star_trans_none_none]
           exists s, u
         · exact hrun
 
 @[simp] theorem star_accept (xs) : m.star.accept xs ↔ m.star.run xs none none := by
   constructor
   · intro h
-    simp at h
+    simp only [accept_eq_true_iff] at h
     match h with
     | ⟨none, none, h, _, _⟩ =>
       exact h
   · intro h
-    simp
+    simp only [accept_eq_true_iff]
     exists none, none
 
-@[simp] theorem star_unstart (xs) : xs ≠ [] → m.star.run xs none none → ∃ s, m.start s ∧ m.star.run xs (some s) none := by
+@[simp] theorem star_unstart : xs ≠ [] → m.star.run xs none none → ∃ s, m.start s ∧ m.star.run xs (some s) none := by
   intro hnone h
   cases xs with
   | nil => contradiction
@@ -98,7 +96,7 @@ protected def star : NFA α where
         exists t
         constructor
         · apply hstart
-        · simp
+        · simp only [run_cons]
           exists none
           constructor
           · simp
@@ -150,7 +148,7 @@ protected def star : NFA α where
 
 @[simp] theorem star_one : m.accept xs → m.star.accept xs := by
   intro h
-  simp at h ⊢
+  simp only [accept_eq_true_iff] at h ⊢
   exists none,none
   by_cases hx: xs = []
   · cases hx
@@ -206,7 +204,7 @@ protected def star : NFA α where
 | _, Or.inl rfl => m.star_sound_nil
 | _, Or.inr ⟨_, _, rfl, hxs, hys⟩ => m.star_sound_append hxs hys
 
-@[simp] theorem star_nur_append : m.star.run zs (some s) none → ∃ xs ys t, xs ≠ [] ∧ zs = xs ++ ys ∧ m.final t ∧ m.run xs s t ∧ m.star.run ys none none := by
+@[simp] theorem star_run_unappend : m.star.run zs (some s) none → ∃ xs ys t, xs ≠ [] ∧ zs = xs ++ ys ∧ m.final t ∧ m.run xs s t ∧ m.star.run ys none none := by
   intro hrun
   induction zs generalizing s with
   | nil =>
@@ -217,9 +215,7 @@ protected def star : NFA α where
     | ⟨some s, htrans, hrun⟩ =>
       match H hrun with
       | ⟨xs, ys, t, _, hz, hstart, hxrun, hyrun⟩ =>
-        exists z::xs
-        exists ys
-        exists t
+        exists z::xs, ys, t
         constructor
         · intro
           contradiction
@@ -232,9 +228,8 @@ protected def star : NFA α where
                 exists s
               · exact hyrun
     | ⟨none, htrans, hrun⟩ =>
-      exists [z]
-      exists zs
-      simp at htrans
+      exists [z], zs
+      simp only [star_trans_some_none] at htrans
       match htrans with
       | ⟨t, htrans, hstart⟩ =>
         exists t
@@ -253,9 +248,9 @@ protected def star : NFA α where
 @[simp] theorem star_exact {zs} : m.star.accept zs → zs ≠ [] → ∃ xs ys, xs ≠ [] ∧ zs = xs ++ ys ∧ m.accept xs ∧ m.star.accept ys := by
   intro h hz
   rw [star_accept] at h
-  match star_unstart m zs hz h with
+  match star_unstart m hz h with
   | ⟨s, hsfinal, hsrun⟩ =>
-    match star_nur_append m hsrun with
+    match star_run_unappend m hsrun with
     | ⟨xs, ys, t, hx, hxy, hstart, hfinal, hrun⟩ =>
       exists xs
       exists ys
@@ -264,7 +259,7 @@ protected def star : NFA α where
       · constructor
         · exact hxy
         · constructor
-          · simp
+          · simp only [accept_eq_true_iff]
             exists s, t
           · rw [star_accept]
             exact hrun
