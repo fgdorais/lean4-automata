@@ -1,5 +1,6 @@
 import Automata.NFA.Alt
 import Automata.NFA.And
 import Automata.NFA.Basic
-import Automata.NFA.True
 import Automata.NFA.False
+import Automata.NFA.Star
+import Automata.NFA.True
