@@ -5,5 +5,6 @@ import Automata.NFA.Cat
 import Automata.NFA.True
 import Automata.NFA.False
 import Automata.NFA.Map
+import Automata.NFA.Reachability
 import Automata.NFA.Star
 import Automata.NFA.True
