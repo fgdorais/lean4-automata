@@ -1,10 +1,8 @@
 import Automata.NFA.Basic
 
 namespace NFA
-universe u₁ u₂
-variable (m₁ : NFA.{u₁} α) (m₂ : NFA.{u₂} α)
 
-protected def cat : NFA α where
+protected def cat (m₁ m₂ : NFA α) : NFA α where
   State := Sum m₁.State m₂.State
   instDecEq := inferInstance
   instFind := inferInstance
@@ -21,6 +19,8 @@ protected def cat : NFA α where
   | x, .inr s₂, .inr t₂ => m₂.trans x s₂ t₂
 
 instance : HAppend (NFA α) (NFA α) (NFA α) := ⟨NFA.cat⟩
+
+variable {m₁ : NFA.{u_1} α} {m₂ : NFA.{u_2} α}
 
 @[simp] theorem cat_start_inl : (m₁ ++ m₂).start (.inl s₁) ↔ m₁.start s₁ := Iff.rfl
 
@@ -71,7 +71,7 @@ instance : HAppend (NFA α) (NFA α) (NFA α) := ⟨NFA.cat⟩
   | cons x xs ih =>
     simp only [run_cons]
     intro
-    | ⟨Sum.inl u₁, htrans, _⟩ => exact cat_trans_inr_inl m₁ m₂ htrans
+    | ⟨Sum.inl u₁, htrans, _⟩ => exact cat_trans_inr_inl htrans
     | ⟨Sum.inr u₂, _, hrun⟩ => exact ih hrun
 
 @[simp] theorem cat_run_inr_inr : (m₁ ++ m₂).run xs (.inr s₂) (.inr t₂) ↔ m₂.run xs s₂ t₂ := by
@@ -85,7 +85,7 @@ instance : HAppend (NFA α) (NFA α) (NFA α) := ⟨NFA.cat⟩
     · intro
       | ⟨Sum.inl u₁, htrans, _⟩ =>
         absurd htrans
-        exact cat_trans_inr_inl m₁ m₂
+        exact cat_trans_inr_inl
       | ⟨Sum.inr u₂, htrans, hrun⟩ =>
         simp at htrans
         rw [ih] at hrun
@@ -99,10 +99,10 @@ instance : HAppend (NFA α) (NFA α) (NFA α) := ⟨NFA.cat⟩
 @[simp] theorem cat_run_inl_inl : (m₁ ++ m₂).run xs (.inl s₁) (.inl t₁) ↔ m₁.run xs s₁ t₁ := by
   induction xs generalizing s₁ t₁ with
   | nil =>
-    simp
+    simp only [run_nil]
     constructor <;> intro | rfl => rfl
   | cons x xs ih =>
-    simp
+    simp only [run_cons]
     constructor
     · intro
       | ⟨Sum.inl u₁, htrans, hrun⟩ =>
@@ -111,7 +111,7 @@ instance : HAppend (NFA α) (NFA α) (NFA α) := ⟨NFA.cat⟩
         exists u₁
       | ⟨Sum.inr u₂, _, hrun⟩ =>
         absurd hrun
-        exact cat_run_inr_inl m₁ m₂
+        exact cat_run_inr_inl
     · intro ⟨u₁, htrans, hrun⟩
       rw [←cat_trans_inl_inl] at htrans
       rw [←ih] at hrun
@@ -121,7 +121,7 @@ instance : HAppend (NFA α) (NFA α) (NFA α) := ⟨NFA.cat⟩
   intro hxs hrun₁ hrun₂ hfinal hstart
   induction xs generalizing s₁ t₂ with
   | nil =>
-    simp
+    simp only [List.nil_append]
     simp at hrun₁
     cases ys with
     | nil => contradiction
@@ -129,7 +129,7 @@ instance : HAppend (NFA α) (NFA α) (NFA α) := ⟨NFA.cat⟩
       rw [NFA.run_cons] at hrun₂ ⊢
       match hrun₂ with
       | ⟨r₂, htrans, hrun⟩ =>
-        exists (.inr r₂)
+        exists .inr r₂
         constructor
         · simp
           constructor
@@ -143,10 +143,9 @@ instance : HAppend (NFA α) (NFA α) (NFA α) := ⟨NFA.cat⟩
     rw [NFA.run_cons] at hrun₁ ⊢
     match hrun₁ with
     | ⟨u₁, htrans, hrun⟩ =>
-      exists (.inl u₁)
+      exists .inl u₁
       constructor
-      · simp
-        exact htrans
+      · simp [htrans]
       · apply ih
         · exact hrun
         · exact hrun₂
@@ -184,12 +183,10 @@ instance : HAppend (NFA α) (NFA α) (NFA α) := ⟨NFA.cat⟩
         rw [List.append_nil]
         exists .inl s₁, .inl t₁
         constructor
-        · simp
-          exact hrun₁
+        · simp [hrun₁]
         · constructor
-          · simp
-            exact hstart₁
-          · simp
+          · simp [hstart₁]
+          · simp only [cat_final_inl]
             constructor
             · exact hfinal₁
             · exists s₂
@@ -203,9 +200,9 @@ instance : HAppend (NFA α) (NFA α) (NFA α) := ⟨NFA.cat⟩
           · exact hfinal₁
           · exact hstart₂
         · constructor
-          · simp
+          · simp only [cat_start_inl]
             exact hstart₁
-          · simp
+          · simp only [cat_final_inr]
             exact hfinal₂
 
 @[simp] theorem concat_nurLR : (m₁ ++ m₂).run zs (.inl s₁) (.inr s₂) = true → ∃ xs ys t₁ t₂, zs = xs ++ ys ∧ m₁.final t₁ ∧ m₁.run xs s₁ t₁ ∧ m₂.start t₂ ∧ m₂.run ys t₂ s₂ := by
@@ -235,7 +232,7 @@ instance : HAppend (NFA α) (NFA α) (NFA α) := ⟨NFA.cat⟩
                 exists t₂
     | ⟨.inl t, htrans, hrun⟩ =>
       match ih hrun with
-      | ⟨xs,ys,t₁,t₂,heq,hfinal,hxrun,hstart,hyrun⟩ =>
+      | ⟨xs, ys, t₁, t₂, heq, hfinal, hxrun, hstart, hyrun⟩ =>
         exists z::xs, ys, t₁, t₂
         constructor
         · rw [List.cons_append, heq]
@@ -252,12 +249,12 @@ theorem cat_exact : (m₁ ++ m₂).accept zs → ∃ xs ys, zs = xs ++ ys ∧ m�
   intro hz
   simp at hz
   match hz with
-  | ⟨.inl s₁, .inl s₂, hrun ,⟨hstart,hfinal⟩⟩ =>
+  | ⟨.inl s₁, .inl s₂, hrun, hstart, hfinal⟩ =>
     rw [cat_start_inl] at hstart
     rw [cat_final_inl] at hfinal
     rw [cat_run_inl_inl] at hrun
     match hfinal with
-    |⟨hfinal, t, hstart, htfinal⟩ =>
+    | ⟨hfinal, t, hstart, htfinal⟩ =>
       exists zs, []
       rw [List.append_nil]
       constructor
@@ -267,10 +264,10 @@ theorem cat_exact : (m₁ ++ m₂).accept zs → ∃ xs ys, zs = xs ++ ys ∧ m�
           exists s₁, s₂
         · simp
           exists t
-  | ⟨.inl s₁, .inr s₂, hrun, ⟨hstart₁,hfinal₂⟩⟩ =>
+  | ⟨.inl s₁, .inr s₂, hrun, hstart₁, hfinal₂⟩ =>
     rw [cat_start_inl] at hstart₁
     rw [cat_final_inr] at hfinal₂
-    match concat_nurLR m₁ m₂ hrun with
+    match concat_nurLR hrun with
     | ⟨xs,ys,t₁,t₂,heq,hfinal₁,hxrun,hstart₂,hyrun⟩ =>
       exists xs, ys
       constructor
@@ -283,12 +280,12 @@ theorem cat_exact : (m₁ ++ m₂).accept zs → ∃ xs ys, zs = xs ++ ys ∧ m�
   | ⟨.inr s₁, .inl s₂, hrun, _⟩ =>
     absurd hrun
     apply cat_run_inr_inl
-  | ⟨.inr s₁, .inr s₂, hrun, ⟨hstart,hfinal⟩⟩ =>
+  | ⟨.inr s₁, .inr s₂, hrun, hstart, hfinal⟩ =>
     rw [cat_start_inr] at hstart
     rw [cat_final_inr] at hfinal
     rw [cat_run_inr_inr] at hrun
     match hstart with
-    | ⟨hstart,t,htstart,htfinal⟩ =>
+    | ⟨hstart, t, htstart, htfinal⟩ =>
       exists [], zs
       rw [List.nil_append]
       constructor
