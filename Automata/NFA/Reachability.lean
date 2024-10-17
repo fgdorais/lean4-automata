@@ -26,6 +26,7 @@ variable (m : NFA α)
         · exact hrunys
 
 @[simp] theorem run_append_eq : m.run (ys ++ xs) s t = Find.any (λ u => m.run ys s u ∧ m.run xs u t) := by
+  rw [Bool.eq_iff_iff]
   simp
   constructor
   · exact m.run_unappend
@@ -117,7 +118,7 @@ theorem run_of_reach [Find α] {d : Nat} {s t : m.State} : m.reach d s t → ∃
       | ⟨ys, hlist, hrun⟩ =>
         exists ys
         constructor
-        · transitivity (2 ^ d)
+        · trans (2 ^ d)
           · exact hlist
           · rw [Nat.pow_succ, Nat.mul_succ, Nat.mul_one]
             apply Nat.lt_add_of_pos_right
@@ -128,10 +129,10 @@ theorem run_of_reach [Find α] {d : Nat} {s t : m.State} : m.reach d s t → ∃
       | ⟨s₁, rexact, r⟩ =>
         match ih r with
         | ⟨ys, hlist, hrun⟩ =>
-          match run_of_reachExact m d rexact with
+          match run_of_reachExact m rexact with
           |⟨zs, hrlist, hrrun⟩ =>
             exists zs++ys
-            constr
+            constructor
             · rw [List.length_append]
               rw [hrlist]
               rw [Nat.pow_succ]
@@ -143,7 +144,7 @@ theorem run_of_reach [Find α] {d : Nat} {s t : m.State} : m.reach d s t → ∃
               exists s₁
 
 @[simp] theorem reach_of_run [Find α] {d : Nat} {s t : m.State} {xs : List α} : m.run xs s t → xs.length < 2 ^ d → m.reach d s t := by
-  intro hrun hxs
+  intro hrun hxs₁
   induction d using Nat.recAux generalizing s t xs with
   | zero =>
     cases xs with
@@ -156,19 +157,18 @@ theorem run_of_reach [Find α] {d : Nat} {s t : m.State} : m.reach d s t → ∃
   | succ d ih =>
     unfold reach
     simp
-    by_cases xs.length < 2 ^ d
-    | isTrue hxs =>
+    if hxs₂: xs.length < 2 ^ d then
       left
-      exact ih hrun hxs
-    | isFalse lxs =>
-      have lxs := Nat.le_of_not_gt lxs
+      exact ih hrun hxs₂
+    else
+      have lxs := Nat.le_of_not_gt hxs₂
       right
       rw [←List.take_append_drop (2 ^ d) xs] at hrun
       match m.run_unappend hrun with
       | ⟨u,hrunsu,hrunut⟩ =>
         exists u
         constructor
-        · apply m.reachExact_of_run d hrunsu
+        · apply m.reachExact_of_run hrunsu
           rw [List.length_take]
           rw [Nat.min_def]
           rw [if_pos lxs]
@@ -176,8 +176,34 @@ theorem run_of_reach [Find α] {d : Nat} {s t : m.State} : m.reach d s t → ∃
           rw [List.length_drop]
           apply Nat.sub_lt_left_of_lt_add
           · exact lxs
-          · rw [Nat.pow_succ, Nat.mul_two] at hxs
-            exact hxs
+          · rw [Nat.pow_succ, Nat.mul_two] at hxs₁
+            exact hxs₁
+
+theorem reachableAux {s t : m.State} {ws : List α} {n : Nat} : ws.length < n → m.run ws s t → ∃ (ws : List α), ws.length < m.size ∧ m.run ws s t := by
+  intro hws hrun
+  induction n generalizing ws with
+  | zero => contradiction
+  | succ n ih =>
+    by_cases ws.length < m.size with
+    | isTrue hlt => exists ws
+    | isFalse hge =>
+      have hge : ws.length ≥ m.size := Nat.le_of_not_lt hge
+      match m.splitting hge hrun with
+      | ⟨u,xs,ys,zs,heq,hys,hxrun,_,hzrun⟩ =>
+        have hrun : m.run (xs ++ zs) s t := by
+          rw [run_append]
+          exists u
+        have hlt : (xs ++ zs).length < n := calc
+          _ = xs.length + zs.length := by rw [List.length_append]
+          _ < (xs.length + ys.length) + zs.length := by apply Nat.add_lt_add_right; apply Nat.lt_add_of_pos_right; exact hys
+          _ = (xs ++ ys).length + zs.length := by rw [List.length_append]
+          _ = ((xs ++ ys) ++ zs).length := by rw [List.length_append (xs ++ ys)]
+          _ = ws.length := by rw [heq]
+          _ ≤ n := by apply Nat.le_of_lt_succ hws
+        apply ih hlt hrun
+
+theorem reachable {s t : m.State} {ws : List α} : m.run ws s t → ∃ (ws : List α), ws.length < m.size ∧ m.run ws s t :=
+  m.reachableAux (Nat.lt_succ_self ws.length)
 
 @[simp] theorem reach_lg2_iff_reachable [Find α] (s t : m.State) : m.reach m.size.lg2 s t ↔ ∃ xs, m.run xs s t := by
 constructor
