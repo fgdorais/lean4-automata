@@ -9,11 +9,11 @@ def map : NFA β where
   trans y s t := Find.any fun x => f x = y && m.trans x s t
   final s := m.final s
 
-@[scoped simp] theorem map_start : (m.map f).start s = m.start s := rfl
+@[simp] theorem map_start : (m.map f).start s = m.start s := rfl
 
-@[scoped simp] theorem map_final : (m.map f).final s = m.final s := rfl
+@[simp] theorem map_final : (m.map f).final s = m.final s := rfl
 
-@[scoped simp] theorem map_trans : (m.map f).trans y s t = Find.any (λ x : α => f x = y && m.trans x s t) := rfl
+@[simp] theorem map_trans : (m.map f).trans y s t = Find.any (λ x : α => f x = y && m.trans x s t) := rfl
 
 @[simp] theorem map_run : m.run xs s t = true → (m.map f).run (xs.map f) s t = true := by
   induction xs generalizing s t with
@@ -54,7 +54,7 @@ def map : NFA β where
           · simp
             exists u
 
-@[simp] theorem map_exact : (m.map f).accept ys → ∃ (xs : List α), xs.map f = ys ∧ m.accept xs := by
+theorem map_exact : (m.map f).accept ys → ∃ (xs : List α), xs.map f = ys ∧ m.accept xs := by
   intro h
   simp at h
   match h with
