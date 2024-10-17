@@ -29,7 +29,7 @@ def map : NFA β where
       · apply ih
         exact hrun
 
-@[simp] theorem map_nur : (m.map f).run ys s t = true → ∃ (xs : List α), ys = xs.map f ∧ m.run xs s t = true := by
+@[simp] theorem unmap_run : (m.map f).run ys s t = true → ∃ (xs : List α), ys = xs.map f ∧ m.run xs s t = true := by
   induction ys generalizing s t with
   | nil =>
     intro h
@@ -61,7 +61,7 @@ def map : NFA β where
   | ⟨s₁, s₂, hsrun, hsfinal⟩ =>
     match hsfinal with
     | ⟨hsrstart, hsrfinal⟩ =>
-      match map_nur f m hsrun with
+      match unmap_run f m hsrun with
       | ⟨xs, hxsmap, hxsrun⟩ =>
       exists xs
       constructor
