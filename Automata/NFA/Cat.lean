@@ -150,6 +150,46 @@ variable {m₁ : NFA.{u_1} α} {m₂ : NFA.{u_2} α}
         · exact hrun
         · exact hrun₂
 
+@[simp] theorem uncat_run_inl_inr : (m₁ ++ m₂).run zs (.inl s₁) (.inr s₂) = true → ∃ xs ys t₁ t₂, zs = xs ++ ys ∧ m₁.final t₁ ∧ m₁.run xs s₁ t₁ ∧ m₂.start t₂ ∧ m₂.run ys t₂ s₂ := by
+  intro h
+  induction zs generalizing s₁ s₂ with
+  | nil =>
+    rw [NFA.run_nil] at h
+    contradiction
+  | cons z zs ih =>
+    simp at h
+    match h with
+    | ⟨.inr t₂, htrans, hrun⟩ =>
+      rw [cat_run_inr_inr] at hrun
+      rw [cat_trans_inl_inr] at htrans
+      match htrans with
+      | ⟨hfinal, t, hstart, htrans⟩ =>
+        exists [], z::zs, s₁, t
+        constructor
+        · rfl
+        · constructor
+          · exact hfinal
+          · constructor
+            · simp
+            · constructor
+              · exact hstart
+              · simp
+                exists t₂
+    | ⟨.inl t, htrans, hrun⟩ =>
+      match ih hrun with
+      | ⟨xs, ys, t₁, t₂, heq, hfinal, hxrun, hstart, hyrun⟩ =>
+        exists z::xs, ys, t₁, t₂
+        constructor
+        · rw [List.cons_append, heq]
+        · constructor
+          · exact hfinal
+          · constructor
+            · simp
+              exists t
+            · constructor
+              · exact hstart
+              · exact hyrun
+
 @[simp] theorem cat_sound : m₁.accept xs → m₂.accept ys → NFA.accept (m₁ ++ m₂) (xs ++ ys) := by
   unfold accept
   intro h₁ h₂
@@ -205,46 +245,6 @@ variable {m₁ : NFA.{u_1} α} {m₂ : NFA.{u_2} α}
           · simp only [cat_final_inr]
             exact hfinal₂
 
-@[simp] theorem concat_nurLR : (m₁ ++ m₂).run zs (.inl s₁) (.inr s₂) = true → ∃ xs ys t₁ t₂, zs = xs ++ ys ∧ m₁.final t₁ ∧ m₁.run xs s₁ t₁ ∧ m₂.start t₂ ∧ m₂.run ys t₂ s₂ := by
-  intro h
-  induction zs generalizing s₁ s₂ with
-  | nil =>
-    rw [NFA.run_nil] at h
-    contradiction
-  | cons z zs ih =>
-    simp at h
-    match h with
-    | ⟨.inr t₂, htrans, hrun⟩ =>
-      rw [cat_run_inr_inr] at hrun
-      rw [cat_trans_inl_inr] at htrans
-      match htrans with
-      | ⟨hfinal, t, hstart, htrans⟩ =>
-        exists [], z::zs, s₁, t
-        constructor
-        · rfl
-        · constructor
-          · exact hfinal
-          · constructor
-            · simp
-            · constructor
-              · exact hstart
-              · simp
-                exists t₂
-    | ⟨.inl t, htrans, hrun⟩ =>
-      match ih hrun with
-      | ⟨xs, ys, t₁, t₂, heq, hfinal, hxrun, hstart, hyrun⟩ =>
-        exists z::xs, ys, t₁, t₂
-        constructor
-        · rw [List.cons_append, heq]
-        · constructor
-          · exact hfinal
-          · constructor
-            · simp
-              exists t
-            · constructor
-              · exact hstart
-              · exact hyrun
-
 theorem cat_exact : (m₁ ++ m₂).accept zs → ∃ xs ys, zs = xs ++ ys ∧ m₁.accept xs ∧ m₂.accept ys := by
   intro hz
   simp at hz
@@ -267,8 +267,8 @@ theorem cat_exact : (m₁ ++ m₂).accept zs → ∃ xs ys, zs = xs ++ ys ∧ m�
   | ⟨.inl s₁, .inr s₂, hrun, hstart₁, hfinal₂⟩ =>
     rw [cat_start_inl] at hstart₁
     rw [cat_final_inr] at hfinal₂
-    match concat_nurLR hrun with
-    | ⟨xs,ys,t₁,t₂,heq,hfinal₁,hxrun,hstart₂,hyrun⟩ =>
+    match uncat_run_inl_inr hrun with
+    | ⟨xs, ys, t₁, t₂, heq, hfinal₁, hxrun, hstart₂, hyrun⟩ =>
       exists xs, ys
       constructor
       · exact heq
