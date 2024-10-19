@@ -4,5 +4,6 @@ import Automata.NFA.Basic
 import Automata.NFA.Cat
 import Automata.NFA.True
 import Automata.NFA.False
+import Automata.NFA.Map
 import Automata.NFA.Star
 import Automata.NFA.True
