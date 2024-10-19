@@ -2,7 +2,7 @@ import Automata.NFA.Basic
 
 namespace NFA
 
-structure Bisim (m₁ m₂ : NFA α) where
+@[pp_nodot] structure Bisim (m₁ m₂ : NFA α) where
   rel : m₁.State → m₂.State → Bool
   start : rel s₁ s₂ → m₁.start s₁ = m₂.start s₂
   transLR : rel s₁ s₂ → m₁.trans x s₁ t₁ → Find.any fun t₂ => rel t₁ t₂ && m₂.trans x s₂ t₂
@@ -44,9 +44,9 @@ protected def comp (a : Bisim m₂ m₃) (b : Bisim m₁ m₂) : Bisim m₁ m₃
     simp only [Find.any_iff_exists, Bool.and_eq_true] at h
     match h with
     | ⟨s₂, hb, ha⟩ =>
-      trans (m₂.start s₂)
-      exact b.start hb
-      exact a.start ha
+      trans m₂.start s₂
+      · exact b.start hb
+      · exact a.start ha
   transLR H h₁ := by
     simp only [Find.any_iff_exists, Bool.and_eq_true] at H h₁ ⊢
     match H with
@@ -83,9 +83,16 @@ protected def comp (a : Bisim m₂ m₃) (b : Bisim m₁ m₂) : Bisim m₁ m₃
     simp only [Find.any_iff_exists, Bool.and_eq_true] at h
     match h with
     | ⟨s₂, hb, ha⟩ =>
-      trans (m₂.final s₂)
-      exact b.final hb
-      exact a.final ha
+      trans m₂.final s₂
+      · exact b.final hb
+      · exact a.final ha
+
+protected def join (a b : Bisim m₁ m₂) : Bisim m₁ m₂ where
+  rel s t := a.rel s t || b.rel s t
+  start h := sorry
+  transLR H h := sorry
+  transRL H h := sorry
+  final h := sorry
 
 end Bisim
 
