@@ -89,10 +89,68 @@ protected def comp (a : Bisim m₂ m₃) (b : Bisim m₁ m₂) : Bisim m₁ m₃
 
 protected def join (a b : Bisim m₁ m₂) : Bisim m₁ m₂ where
   rel s t := a.rel s t || b.rel s t
-  start h := sorry
-  transLR H h := sorry
-  transRL H h := sorry
-  final h := sorry
+  start h := by
+    simp only [Bool.or_eq_true] at h
+    match h with
+    | .inl ha =>
+      exact a.start ha
+    | .inr hb =>
+      exact b.start hb
+  transLR H h := by
+    simp only [Bool.or_eq_true] at H h
+    simp only [Find.any_iff_exists, Bool.and_eq_true, Bool.or_eq_true]
+    match H with
+    | .inl ha =>
+      have H := a.transLR ha h
+      simp only [Find.any_iff_exists, Bool.and_eq_true] at H
+      match H with
+      | ⟨t₂, ha₂, htrans⟩ =>
+        exists t₂
+        constructor
+        · left
+          exact ha₂
+        · exact htrans
+    | .inr hb =>
+      have H := b.transLR hb h
+      simp only [Find.any_iff_exists, Bool.and_eq_true] at H
+      match H with
+      | ⟨t₂, hb₂, htrans⟩ =>
+        exists t₂
+        constructor
+        · right
+          exact hb₂
+        · exact htrans
+  transRL H h := by
+    simp only [Bool.or_eq_true] at H h
+    simp only [Find.any_iff_exists, Bool.and_eq_true, Bool.or_eq_true]
+    match H with
+    | .inl ha =>
+      have H := a.transRL ha h
+      simp only [Find.any_iff_exists, Bool.and_eq_true] at H
+      match H with
+      | ⟨t₂, ha₂, htrans⟩ =>
+        exists t₂
+        constructor
+        · left
+          exact ha₂
+        · exact htrans
+    | .inr hb =>
+      have H := b.transRL hb h
+      simp only [Find.any_iff_exists, Bool.and_eq_true] at H
+      match H with
+      | ⟨t₂, hb₂, htrans⟩ =>
+        exists t₂
+        constructor
+        · right
+          exact hb₂
+        · exact htrans
+  final h := by
+    simp only [Bool.or_eq_true] at h
+    match h with
+    | .inl ha =>
+      exact a.final ha
+    | .inr hb =>
+      exact b.final hb
 
 end Bisim
 
