@@ -31,9 +31,7 @@ protected def lit : NFA α where
   next =>
     unfold NFA.run
     simp
-    constructor
-    · intro; symm; assumption
-    · intro; symm; assumption
+    constructor <;> intro | hysmm => symm; assumption
   next x =>
     rw [Bool.eq_iff_iff]
     simp
