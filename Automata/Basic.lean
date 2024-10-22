@@ -1,5 +1,5 @@
 import Batteries
-import Extra
+import Extra.Find
 
 structure StateType.{u} where
   State : Type u
