@@ -5,8 +5,7 @@ variable (m : NFA α)
 
 protected def star : NFA α where
   State := Option m.State
-  instDecEq := inferInstance
-  instFind := inferInstance
+  instEnum := inferInstance
   start
   | some _ => false
   | none => true
