@@ -29,7 +29,7 @@ protected def lit : NFA α where
 @[simp] theorem lit_run : (NFA.lit set).run xs t s = match xs with | [] => s = t | [x] => !t && s && set x | _ => false := by
   split
   next =>
-    unfold NFA.run
+    rw[Bool.eq_iff_iff]
     simp
     constructor <;> intro | hysmm => symm; assumption
   next x =>
@@ -48,7 +48,6 @@ protected def lit : NFA α where
       simp
 
 @[simp] theorem lit_correct: (NFA.lit set).accept xs = match xs with | [x] => set x | _ => false := by
-  unfold accept
   rw [Bool.eq_iff_iff]
   simp
   match xs with
