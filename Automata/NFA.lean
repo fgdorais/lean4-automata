@@ -2,7 +2,7 @@ import Automata.NFA.Alt
 import Automata.NFA.And
 import Automata.NFA.Basic
 import Automata.NFA.Cat
-import Automata.NFA.True
+import Automata.NFA.Eps
 import Automata.NFA.False
 import Automata.NFA.Map
 import Automata.NFA.Star
