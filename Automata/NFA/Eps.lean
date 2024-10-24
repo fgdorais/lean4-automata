@@ -26,8 +26,8 @@ protected def eps : NFA α where
     simp
     exists ()
   next h =>
-    simp only [Option.isNone_iff_eq_none]
-    intro ⟨(),(), hrun, _, _⟩
+    rw [Bool.eq_iff_iff]
+    simp
     apply h
     cases xs with
     | nil => rfl
