@@ -31,7 +31,7 @@ protected def lit : NFA α where
   next =>
     rw[Bool.eq_iff_iff]
     simp
-    constructor <;> intro | hysmm => symm; assumption
+    constructor <;> intro | hsymm => symm; assumption
   next x =>
     rw [Bool.eq_iff_iff]
     simp
