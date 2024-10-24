@@ -8,15 +8,11 @@ protected def eps : NFA α where
   final _ := true
   trans _ _ _ := false
 
--- Not used
--- @[scoped simp] theorem eps_start (s : NFA.eps.State) :
--- (NFA.eps (α:=α)).start s = true := rfl
+@[simp] theorem eps_start : (NFA.eps (α:=α)).start s = true := rfl
 
--- Not used
--- @[scoped simp] theorem eps_final (s : NFA.eps.State) :
--- (NFA.eps (α:=α)).final s = true := rfl
+@[simp] theorem eps_final : (NFA.eps (α:=α)).final s = true := rfl
 
-@[scoped simp] theorem eps_trans (x : α) (s t : NFA.eps.State) : NFA.eps.trans x s t = false := rfl
+@[simp] theorem eps_trans : NFA.eps.trans x s t = false := rfl
 
 /-- Proof of correctness for `eps` machine -/
 @[simp] theorem eps_correct (xs : List α) : NFA.eps.accept xs = match xs with | [] => true | _ => false := by
@@ -28,16 +24,14 @@ protected def eps : NFA α where
   next h =>
     rw [Bool.eq_iff_iff]
     simp
-    apply h
+    intro () ()
     cases xs with
-    | nil => rfl
+    | nil =>
+      contradiction
     | cons x xs =>
-      unfold NFA.run at hrun
-      simp at hrun
-      match hrun with
-      | ⟨_, h, _⟩ =>
-        rw [eps_trans] at h
-        contradiction
+      rw [Bool.eq_false_iff, ne_eq]
+      rw [NFA.run_cons]
+      simp
 
 @[simp] theorem eps_sound : xs = [] → NFA.eps.accept xs := by
   intro h
