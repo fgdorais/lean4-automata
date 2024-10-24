@@ -1,8 +1,8 @@
 import Batteries
 import Extra.Find
+import Extra.Fin
 
 structure StateType.{u} where
   State : Type u
-  [instFind : Find State]
-  [instDecEq : DecidableEq State]
-attribute [instance] StateType.instFind StateType.instDecEq
+  [instEnum : Fin.Enum State]
+attribute [instance] StateType.instEnum
