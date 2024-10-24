@@ -3,8 +3,7 @@ import Automata.NFA.Basic
 namespace NFA
 
 protected def false : NFA α where
-  instDecEq := inferInstance
-  instFind := inferInstance
+  instEnum := inferInstance
   State := Empty
   start := (nomatch .)
   final := (nomatch .)

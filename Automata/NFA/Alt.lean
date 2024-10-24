@@ -4,8 +4,7 @@ namespace NFA
 
 protected def alt (m₁ m₂ : NFA α) : NFA α where
   State := Sum m₁.State m₂.State
-  instDecEq := inferInstance
-  instFind := inferInstance
+  instEnum := inferInstance
   start
   | .inl s₁ => m₁.start s₁
   | .inr s₂ => m₂.start s₂
