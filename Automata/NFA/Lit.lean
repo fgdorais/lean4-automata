@@ -48,17 +48,12 @@ protected def lit : NFA α where
 
 theorem lit_sound : set x = true → (NFA.lit set).accept [x] = true := by
   intro h
-  rw [lit_correct]
-  split
-  next hx =>
-    cases hx
-    exact h
-  next =>
-    assumption
+  simp
+  exact h
 
 theorem lit_exact : (NFA.lit set).accept xs = true → ∃ x, set x = true ∧ xs = [x] := by
+  simp only [lit_correct]
   intro h
-  rw [lit_correct] at h
   split at h
   next x =>
     exists x
