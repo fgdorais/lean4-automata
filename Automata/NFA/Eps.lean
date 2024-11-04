@@ -18,10 +18,11 @@ protected def eps : NFA α where
 @[simp] theorem eps_correct (xs : List α) : NFA.eps.accept xs = match xs with | [] => true | _ => false := by
   split
   next =>
-    simp
+    simp only [accept_eq_true_iff, run_nil, eps_start, eps_final, and_self, and_true, exists_eq']
     exists ()
   next h =>
-    simp
+    simp only [accept_eq_false_iff, Bool.not_eq_true, eps_start, not_true_eq_false, eps_final,
+      or_self, or_false]
     intro () ()
     cases xs with
     | nil =>
