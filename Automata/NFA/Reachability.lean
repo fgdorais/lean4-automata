@@ -89,7 +89,8 @@ theorem run_of_reachExact [Find α] : m.reachExact d s t → ∃ xs, xs.length =
       constructor
       · apply ih hrunsu
         rw [List.length_take, Nat.min_def, hxs]
-        rw [if_pos (Nat.pow_le_pow_of_le_right (Nat.zero_lt _) (Nat.le_add_right _ 1))]
+        rw [if_pos]
+        omega
       · apply ih hrunut
         rw [List.length_drop, hxs, Nat.pow_succ, Nat.mul_succ, Nat.mul_one, Nat.add_sub_cancel]
 
@@ -105,7 +106,7 @@ theorem run_of_reach [Find α] {d : Nat} {s t : m.State} : m.reach d s t → ∃
     simp at hr
     exists []
     constructor
-    · exact Nat.zero_lt ..
+    · simp
     · unfold run
       simp
       rw [hr]
@@ -122,7 +123,7 @@ theorem run_of_reach [Find α] {d : Nat} {s t : m.State} : m.reach d s t → ∃
           · exact hlist
           · rw [Nat.pow_succ, Nat.mul_succ, Nat.mul_one]
             apply Nat.lt_add_of_pos_right
-            exact Nat.zero_lt ..
+            omega
         · exact hrun
     | inr ir =>
       match ir with
@@ -179,15 +180,62 @@ theorem run_of_reach [Find α] {d : Nat} {s t : m.State} : m.reach d s t → ∃
           · rw [Nat.pow_succ, Nat.mul_two] at hxs₁
             exact hxs₁
 
-theorem reachableAux {s t : m.State} {ws : List α} {n : Nat} : ws.length < n → m.run ws s t → ∃ (ws : List α), ws.length < m.size ∧ m.run ws s t := by
+-- Taken from `Automata/NFA/Pumping.lean`
+theorem splitting [Fin.Enum  α] {s t : m.State} {ws : List α} : ws.length ≥ m.size → m.run ws s t → ∃ (u : m.State) (xs ys zs : List α), ws = xs ++ ys ++ zs ∧ ys.length > 0 ∧ m.run xs s u ∧ m.run ys u u ∧ m.run zs u t := by
+  intro hw hrun
+  match m.trace_of_run hrun with
+  | ⟨p, hp⟩ =>
+    match Finite.php p.val with
+    | ⟨i,j,hij,hjs,hval⟩ =>
+      let zs := ws.drop j
+      let ys := (ws.take j).drop i
+      let xs := (ws.take j).take i
+      let pz := p.drop j
+      let py := (p.take j).drop i
+      let px := (p.take j).take i
+      have hz : Trace m zs pz := m.trace_drop j hp
+      have hy : Trace m ys py := m.trace_drop i (m.trace_take j hp)
+      have hx : Trace m xs px := m.trace_take i (m.trace_take j hp)
+      have hjp : j ≤ p.length := by
+        rw [←Trace.length_eq_length m hp]
+        transitivity m.size
+        · exact hjs
+        · exact hw
+      have hpij : p.val i = (p.take j).val i := by rw [Path.val_take hjp (Nat.le_of_lt hij)]
+      exists p.val i, xs, ys, zs
+      constructor
+      · calc
+        _ = ws.take j ++ zs := by rw [List.take_append_drop j]
+        _ = (xs ++ ys) ++ zs := by rw [List.take_append_drop i]
+      · constructor
+        · have : j ≤ ws.length := Nat.le_trans hjs hw
+          rw [List.length_drop i (ws.take j)]
+          rw [List.length_take j ws]
+          rw [Nat.min_eq_left this]
+          apply Nat.sub_pos_of_lt hij
+        · constructor
+          · rw [hpij]
+            apply m.run_of_trace hx
+            done
+          · constructor
+            · transitivity (m.run ys (p.val i) (p.val j))
+              · rw [hval]
+              · rw [hpij]
+                apply m.run_of_trace hy
+            · rw [hval]
+              apply m.run_of_trace hz
+              done
+
+-- Taken from `Automata/NFA/Pumping.lean`
+@[simp] theorem reachableAux [Fin.Enum α] {s t : m.State} {ws : List α} {n : Nat} : ws.length < n → m.run ws s t → ∃ (ws : List α), ws.length < m.size ∧ m.run ws s t := by
   intro hws hrun
   induction n generalizing ws with
   | zero => contradiction
   | succ n ih =>
-    by_cases ws.length < m.size with
-    | isTrue hlt => exists ws
-    | isFalse hge =>
-      have hge : ws.length ≥ m.size := Nat.le_of_not_lt hge
+    if hwslt: ws.length < m.size then
+      exists ws
+    else
+      have hge : ws.length ≥ m.size := Nat.le_of_not_lt hwslt
       match m.splitting hge hrun with
       | ⟨u,xs,ys,zs,heq,hys,hxrun,_,hzrun⟩ =>
         have hrun : m.run (xs ++ zs) s t := by
@@ -202,10 +250,11 @@ theorem reachableAux {s t : m.State} {ws : List α} {n : Nat} : ws.length < n �
           _ ≤ n := by apply Nat.le_of_lt_succ hws
         apply ih hlt hrun
 
-theorem reachable {s t : m.State} {ws : List α} : m.run ws s t → ∃ (ws : List α), ws.length < m.size ∧ m.run ws s t :=
+-- Taken from `Automata/NFA/Pumping.lean`
+@[simp] theorem reachable [Fin.Enum α] {s t : m.State} {ws : List α} : m.run ws s t → ∃ (ws : List α), ws.length < m.size ∧ m.run ws s t :=
   m.reachableAux (Nat.lt_succ_self ws.length)
 
-@[simp] theorem reach_lg2_iff_reachable [Find α] (s t : m.State) : m.reach m.size.lg2 s t ↔ ∃ xs, m.run xs s t := by
+@[simp] theorem reach_lg2_iff_reachable [Fin.Enum α] (s t : m.State) : m.reach m.size.lg2 s t ↔ ∃ xs, m.run xs s t := by
 constructor
 · intro h
   match m.run_of_reach h with
@@ -220,9 +269,10 @@ constructor
       · exact hrun
       · calc ys.length
           < m.size := hlength
-        _ < 2 ^ m.size.lg2 := Nat.lt_pow_lg2_self ..
+        _ < 2 ^ m.size.lg2 := sorry
 
-instance (s t : m.State) [Find α] : Decidable (∃ xs, m.run xs s t) :=
+
+instance (s t : m.State) [Fin.Enum α] : Decidable (∃ xs, m.run xs s t) :=
   if h : m.reach m.size.lg2 s t then
     isTrue ((m.reach_lg2_iff_reachable s t).mp h)
   else
