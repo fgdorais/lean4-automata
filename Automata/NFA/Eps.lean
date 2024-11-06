@@ -8,11 +8,11 @@ protected def eps : NFA α where
   final _ := true
   trans _ _ _ := false
 
-@[simp] theorem eps_start : (NFA.eps (α := α)).start s = true := rfl
+@[simp] theorem eps_start (s) : (NFA.eps (α := α)).start s = true := rfl
 
-@[simp] theorem eps_final : (NFA.eps (α := α)).final s = true := rfl
+@[simp] theorem eps_final (s) : (NFA.eps (α := α)).final s = true := rfl
 
-@[simp] theorem eps_trans : NFA.eps.trans x s t = false := rfl
+@[simp] theorem eps_trans (x s t) : (NFA.eps (α := α)).trans x s t = false := rfl
 
 /-- Proof of correctness for `eps` machine -/
 @[simp] theorem eps_correct (xs : List α) : NFA.eps.accept xs = match xs with | [] => true | _ => false := by
