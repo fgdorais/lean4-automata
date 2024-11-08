@@ -17,11 +17,9 @@ protected def eps : NFA α where
 /-- Proof of correctness for `eps` machine -/
 @[simp] theorem eps_correct (xs : List α) : NFA.eps.accept xs = match xs with | [] => true | _ => false := by
   split
-  next =>
-    simp only [accept_eq_true_iff, run_nil, eps_start, eps_final, and_self, and_true, exists_eq']
+  · simp only [accept_eq_true_iff, run_nil, eps_start, eps_final, and_self, and_true, exists_eq']
     exists ()
-  next h =>
-    simp only [accept_eq_false_iff, Bool.not_eq_true, eps_start, not_true_eq_false, eps_final,
+  · simp only [accept_eq_false_iff, Bool.not_eq_true, eps_start, not_true_eq_false, eps_final,
       or_self, or_false]
     intro () ()
     cases xs with
@@ -29,7 +27,6 @@ protected def eps : NFA α where
       contradiction
     | cons x xs =>
       rw [Bool.eq_false_iff, ne_eq]
-      rw [NFA.run_cons]
       simp
 
 @[simp] theorem eps_sound : xs = [] → NFA.eps.accept xs := by
@@ -40,7 +37,7 @@ protected def eps : NFA α where
   intro h
   rw [eps_correct] at h
   split at h
-  next => rfl
-  next => contradiction
+  · rfl
+  · contradiction
 
 end NFA
