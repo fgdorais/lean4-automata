@@ -15,42 +15,38 @@ protected theorem Trace.append : {s t u : m.State} → {p : Path u t} → {q : P
 
 theorem Trace.length_eq_length : {s t : m.State} → {xs : List α} → {p : Path s t} → Trace m xs p → xs.length = p.length
 | _, _, [], nil _, .nil => rfl
-| _, _, _ :: _, cons _ _, .cons _ _ => by
-  rw [List.length_cons]
+| _, _, _ :: _, cons _ _, .cons _ htail => by
+  simp only [List.length_cons]
   rw [Path.length_cons]
   rw [length_eq_length]
-  assumption
+  exact htail
 
-theorem run_of_trace {s t : m.State} {p : Path s t} {xs : List α} : Trace m xs p → m.run xs s t := by
+theorem run_of_trace {p : Path s t} : Trace m xs p → m.run xs s t := by
   intro h
   induction xs generalizing s t with
   | nil =>
-    unfold run
-    simp only [decide_eq_true_eq]
+    simp only [run_nil]
     cases h
     rfl
   | cons x xs ih =>
     match h with
     | .cons (u:=u) htrans htrace =>
-    unfold run
-    simp
+    simp only [run_cons]
     exists u
     constructor
     · exact htrans
     · exact ih htrace
 
-theorem trace_of_run {s t : m.State} {xs : List α} : m.run xs s t → ∃ (p : Path s t), Trace m xs p := by
+theorem trace_of_run : m.run xs s t → ∃ (p : Path s t), Trace m xs p := by
   intro hrun
   induction xs generalizing s t with
   | nil =>
-    unfold run at hrun
-    simp at hrun
+    simp only [run_nil] at hrun
     cases hrun
     exists nil s
     exact Trace.nil
   | cons x xs ih =>
-    unfold run at hrun
-    simp at hrun
+    simp only [run_cons] at hrun
     match hrun with
     | ⟨u, htrans, hrun⟩ =>
       match ih hrun with
@@ -58,54 +54,54 @@ theorem trace_of_run {s t : m.State} {xs : List α} : m.run xs s t → ∃ (p : 
         exists cons s p
         exact Trace.cons htrans htrace
 
-theorem trace_drop {s t : m.State} {xs : List α} {p : Path s t} (n : Nat) : Trace m xs p → Trace m  (xs.drop n) (p.drop n) := by
+theorem trace_drop {p : Path s t} (n : Nat) : Trace m xs p → Trace m  (xs.drop n) (p.drop n) := by
   intro htrace
   induction htrace generalizing n with
   | nil =>
     match n with
     | 0 =>
-      rw [List.drop_nil]
+      simp only [List.drop_nil]
       rw [Path.drop_nil_zero]
       apply Trace.nil
     | n+1 =>
-      rw [List.drop_nil]
+      simp only [List.drop_nil]
       rw [Path.drop_nil_succ]
       apply Trace.nil
   | cons htrans htrace ih =>
     match n with
     | 0 =>
-      rw [List.drop_zero]
+      simp only [List.drop_zero]
       rw [Path.drop_zero]
       apply Trace.cons
       · rw [val_cons_zero]
         exact htrans
       · exact htrace
     | n+1 =>
-      rw [List.drop_succ_cons]
+      simp only [List.drop_succ_cons]
       rw [Path.drop_cons_succ]
       exact ih n
 
-theorem trace_take {s t : m.State} {xs : List α} {p : Path s t} (n : Nat) : Trace m xs p → Trace m  (xs.take n) (p.take n) := by
+theorem trace_take {p : Path s t} (n : Nat) : Trace m xs p → Trace m  (xs.take n) (p.take n) := by
   intro htrace
   induction htrace generalizing n with
   | nil =>
     match n with
     | 0 =>
-      rw [List.take_nil]
+      simp only [List.take_nil]
       rw [Path.take_nil_zero]
       apply Trace.nil
     | n+1 =>
-      rw [List.take_nil]
-      rw [Path.take_nil_succ]
-      apply Trace.nil
+    simp only [List.take_nil]
+    rw [Path.take_nil_succ]
+    apply Trace.nil
   | cons htrans _ ih =>
     match n with
     | 0 =>
-      rw [List.take_zero]
+      simp only [List.take_zero]
       rw [Path.take_cons_zero]
       apply Trace.nil
     | n+1 =>
-      rw [List.take_succ_cons]
+      simp only [List.take_succ_cons]
       rw [Path.take_cons_succ]
       apply Trace.cons
       rw [htrans]
