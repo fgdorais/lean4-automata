@@ -7,7 +7,5 @@ structure StateType.{u} where
   [instEnum : Fin.Enum State]
 attribute [instance] StateType.instEnum
 
-
-namespace Nat
-abbrev lg2 (n : Nat) := if n = 0 then 0 else n.log2 + 1
-end Nat
+/-- Length of the binary representation of `n`. -/
+protected abbrev Nat.lg2 (n : Nat) := if n = 0 then 0 else n.log2 + 1
