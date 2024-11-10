@@ -269,7 +269,13 @@ constructor
       · exact hrun
       · calc ys.length
           < m.size := hlength
-        _ < 2 ^ m.size.lg2 := sorry
+        _ < 2 ^ m.size.lg2 := by
+          simp [Nat.lg2]
+          have hsize: (m.size ≠ 0) := by omega
+          simp [hsize]
+          rw [←Nat.log2_lt]
+          simp
+          exact hsize
 
 
 instance (s t : m.State) [Fin.Enum α] : Decidable (∃ xs, m.run xs s t) :=
