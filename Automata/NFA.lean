@@ -8,4 +8,5 @@ import Automata.NFA.False
 import Automata.NFA.Lit
 import Automata.NFA.Map
 import Automata.NFA.Star
+import Automata.NFA.Trace
 import Automata.NFA.True
