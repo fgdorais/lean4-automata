@@ -1,4 +1,4 @@
-name = "Automata"
+name = "lean4-automata"
 defaultTargets = ["Automata"]
 
 [[lean_lib]]
