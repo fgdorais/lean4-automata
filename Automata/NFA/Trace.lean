@@ -13,7 +13,7 @@ protected theorem Trace.append : {s t u : m.State} → {p : Path u t} → {q : P
 | _, _, _, _, nil _, _, _, Trace.nil, hy => hy
 | _, _, _, _, cons _ _, _::_, _, Trace.cons ht hx, hy => Trace.cons ht (Trace.append hx hy)
 
-theorem Trace.length_eq_length : {s t : m.State} → {xs : List α} → {p : Path s t} → Trace m xs p → xs.length = p.length
+@[simp] theorem Trace.length_eq_length : {s t : m.State} → {xs : List α} → {p : Path s t} → Trace m xs p → xs.length = p.length
 | _, _, [], nil _, .nil => rfl
 | _, _, _ :: _, cons _ _, .cons _ htail => by
   simp only [List.length_cons]
@@ -21,7 +21,7 @@ theorem Trace.length_eq_length : {s t : m.State} → {xs : List α} → {p : Pat
   rw [length_eq_length]
   exact htail
 
-theorem run_of_trace {p : Path s t} : Trace m xs p → m.run xs s t := by
+@[simp] theorem run_of_trace {p : Path s t} : Trace m xs p → m.run xs s t := by
   intro h
   induction xs generalizing s t with
   | nil =>
@@ -37,7 +37,7 @@ theorem run_of_trace {p : Path s t} : Trace m xs p → m.run xs s t := by
     · exact htrans
     · exact ih htrace
 
-theorem trace_of_run : m.run xs s t → ∃ (p : Path s t), Trace m xs p := by
+@[simp] theorem trace_of_run : m.run xs s t → ∃ (p : Path s t), Trace m xs p := by
   intro hrun
   induction xs generalizing s t with
   | nil =>
@@ -54,7 +54,7 @@ theorem trace_of_run : m.run xs s t → ∃ (p : Path s t), Trace m xs p := by
         exists cons s p
         exact Trace.cons htrans htrace
 
-theorem trace_drop {p : Path s t} (n : Nat) : Trace m xs p → Trace m  (xs.drop n) (p.drop n) := by
+@[simp] theorem trace_drop {p : Path s t} (n : Nat) : Trace m xs p → Trace m  (xs.drop n) (p.drop n) := by
   intro htrace
   induction htrace generalizing n with
   | nil =>
@@ -81,7 +81,7 @@ theorem trace_drop {p : Path s t} (n : Nat) : Trace m xs p → Trace m  (xs.drop
       rw [Path.drop_cons_succ]
       exact ih n
 
-theorem trace_take {p : Path s t} (n : Nat) : Trace m xs p → Trace m  (xs.take n) (p.take n) := by
+@[simp] theorem trace_take {p : Path s t} (n : Nat) : Trace m xs p → Trace m  (xs.take n) (p.take n) := by
   intro htrace
   induction htrace generalizing n with
   | nil =>
