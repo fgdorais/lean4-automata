@@ -14,12 +14,12 @@ protected theorem Trace.append : {s t u : m.State} → {p : Path u t} → {q : P
 | _, _, _, _, cons _ _, _::_, _, Trace.cons ht hx, hy => Trace.cons ht (Trace.append hx hy)
 
 @[simp] theorem Trace.length_eq_length : {s t : m.State} → {xs : List α} → {p : Path s t} → Trace m xs p → xs.length = p.length
-| _, _, [], nil _, .nil => rfl
-| _, _, _ :: _, cons _ _, .cons _ htail => by
-  simp only [List.length_cons]
-  rw [Path.length_cons]
-  rw [length_eq_length]
-  exact htail
+    | _, _, [], nil _, .nil => rfl
+    | _, _, _ :: _, cons _ _, .cons _ htail => by
+      simp only [List.length_cons]
+      rw [Path.length_cons]
+      rw [length_eq_length]
+      exact htail
 
 @[simp] theorem run_of_trace {p : Path s t} : Trace m xs p → m.run xs s t := by
   intro h
