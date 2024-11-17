@@ -6,12 +6,12 @@ variable (m : NFA α)
 open Path
 
 inductive Trace : {s t : m.State} → List α → Path s t → Prop
-| protected nil {t} : Trace [] (nil t)
-| protected cons {s t u} {p : Path u t} {x xs} : m.trans x s u → Trace xs p → Trace (x :: xs) (Path.cons s p)
+  | protected nil {t} : Trace [] (nil t)
+  | protected cons {s t u} {p : Path u t} {x xs} : m.trans x s u → Trace xs p → Trace (x :: xs) (Path.cons s p)
 
 protected theorem Trace.append : {s t u : m.State} → {p : Path u t} → {q : Path s u} → {xs ys : List α} → Trace m xs q → Trace m ys p → Trace m (xs ++ ys) (q ++ p)
-| _, _, _, _, nil _, _, _, Trace.nil, hy => hy
-| _, _, _, _, cons _ _, _::_, _, Trace.cons ht hx, hy => Trace.cons ht (Trace.append hx hy)
+  | _, _, _, _, nil _, _, _, Trace.nil, hy => hy
+  | _, _, _, _, cons _ _, _::_, _, Trace.cons ht hx, hy => Trace.cons ht (Trace.append hx hy)
 
 @[simp] theorem Trace.length_eq_length : {s t : m.State} → {xs : List α} → {p : Path s t} → Trace m xs p → xs.length = p.length
     | _, _, [], nil _, .nil => rfl
@@ -30,7 +30,7 @@ protected theorem Trace.append : {s t u : m.State} → {p : Path u t} → {q : P
     rfl
   | cons x xs ih =>
     match h with
-    | .cons (u:=u) htrans htrace =>
+    | .cons (u := u) htrans htrace =>
     simp only [run_cons]
     exists u
     constructor
