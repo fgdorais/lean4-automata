@@ -1,4 +1,4 @@
-import Automata.RegEx.Prelude
+import Automata.RegEx.Basic
 import Automata.NFA
 
 namespace RegEx
@@ -26,9 +26,9 @@ theorem soundness {α} {a : RegEx α} {xs : List α} (h : Language a xs) : (mach
   induction h with
   | nil => exact NFA.eps_sound rfl
   | lit h => exact NFA.lit_sound _ h
-  | altL _ ih => exact NFA.alt_sound_left _ _ ih
-  | altR _ ih => exact NFA.alt_sound_right _ _ ih
-  | cat _ _ ih₁ ih₂ => exact NFA.cat_sound _ _ ih₁ ih₂
+  | altL _ ih => exact NFA.alt_sound_left ih
+  | altR _ ih => exact NFA.alt_sound_right  ih
+  | cat _ _ ih₁ ih₂ => exact NFA.cat_sound ih₁ ih₂
   | starNil => exact NFA.star_sound_nil _
   | starCat _ _ ih₁ ih₂ => exact NFA.star_sound_append _ ih₁ ih₂
 
@@ -48,7 +48,7 @@ theorem completeness {α} {a : RegEx α} {xs : List α} (h : (machine a).accept 
     next => contradiction
   | alt a b, _ => by
     unfold machine at h
-    cases NFA.alt_exact (machine a) (machine b) h with
+    cases NFA.alt_exact h with
     | inl hl =>
       apply Language.altL
       exact completeness hl
@@ -57,7 +57,7 @@ theorem completeness {α} {a : RegEx α} {xs : List α} (h : (machine a).accept 
       exact completeness hr
   | cat a b, zs => by
     unfold machine at h
-    match NFA.cat_exact (machine a) (machine b) h with
+    match NFA.cat_exact h with
     | ⟨xs, ys, heq, ha, hb⟩ =>
       rw [heq]
       apply Language.cat
@@ -65,11 +65,10 @@ theorem completeness {α} {a : RegEx α} {xs : List α} (h : (machine a).accept 
       · exact completeness hb
   | star a, zs => by
     unfold machine at h
-    by_cases zs = [] with
-    | isTrue hz =>
+    if hz: zs = [] then
       rw [hz]
       apply Language.starNil
-    | isFalse hz =>
+    else
       match NFA.star_exact (machine a) h hz with
       | ⟨xs, ys, hxs, heq, hx, hy⟩ =>
         have : 1 ≤ xs.length := by
