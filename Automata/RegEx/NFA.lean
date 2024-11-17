@@ -4,7 +4,7 @@ import Automata.NFA
 namespace RegEx
 
 /-- Regular expression language -/
-inductive Language {α} : RegEx α → List α → Prop
+inductive Language : RegEx α → List α → Prop
 | nil : Language nil []
 | lit {x : α} {s : α → Bool} : s x → Language (lit s) [x]
 | altL {a b : RegEx α} {xs : List α} : Language a xs → Language (alt a b) xs
@@ -14,7 +14,7 @@ inductive Language {α} : RegEx α → List α → Prop
 | starCat {a : RegEx α} {xs ys : List α} : Language a xs → Language (star a) ys → Language (star a) (xs ++ ys)
 
 /-- Regular expresion compiler -/
-def machine {α} : RegEx α → NFA α
+def machine : RegEx α → NFA α
 | empty => NFA.false
 | nil => NFA.eps
 | lit s => NFA.lit s
@@ -22,7 +22,7 @@ def machine {α} : RegEx α → NFA α
 | cat a b => machine a ++ machine b
 | star a => (machine a).star
 
-theorem soundness {α} {a : RegEx α} {xs : List α} (h : Language a xs) : (machine a).accept xs := by
+theorem soundness (h : Language a xs) : (machine a).accept xs := by
   induction h with
   | nil => exact NFA.eps_sound rfl
   | lit h => exact NFA.lit_sound _ h
@@ -32,7 +32,7 @@ theorem soundness {α} {a : RegEx α} {xs : List α} (h : Language a xs) : (mach
   | starNil => exact NFA.star_sound_nil _
   | starCat _ _ ih₁ ih₂ => exact NFA.star_sound_append _ ih₁ ih₂
 
-theorem completeness {α} {a : RegEx α} {xs : List α} (h : (machine a).accept xs) : Language a xs :=
+theorem completeness (h : (machine a).accept xs) : Language a xs :=
   match a, xs with
   | nil, zs => by
     unfold machine at h
@@ -93,10 +93,10 @@ theorem completeness {α} {a : RegEx α} {xs : List α} (h : (machine a).accept 
     contradiction
 termination_by sizeOf a + List.length xs
 
-theorem exact {α} (a : RegEx α) (xs : List α) : (machine a).accept xs ↔ Language a xs :=
+theorem exact (a : RegEx α) (xs : List α) : (machine a).accept xs ↔ Language a xs :=
   ⟨completeness, soundness⟩
 
-instance {α} (a : RegEx α) (xs : List α) : Decidable (Language a xs) :=
+instance (a : RegEx α) (xs : List α) : Decidable (Language a xs) :=
   decidable_of_decidable_of_iff (exact a xs)
 
 end RegEx
