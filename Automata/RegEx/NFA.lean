@@ -35,19 +35,19 @@ theorem soundness (h : Language a xs) : (machine a).accept xs := by
 theorem completeness (h : (machine a).accept xs) : Language a xs :=
   match a, xs with
   | nil, zs => by
-    unfold machine at h
+    simp only [machine] at h
     rw [NFA.eps_correct] at h
     split at h
     next => exact Language.nil
     next => contradiction
   | lit s, zs => by
-    unfold machine at h
+    simp only [machine] at h
     rw [NFA.lit_correct] at h
     split at h
     next x => exact Language.lit h
     next => contradiction
   | alt a b, _ => by
-    unfold machine at h
+    simp only [machine] at h
     cases NFA.alt_exact h with
     | inl hl =>
       apply Language.altL
@@ -56,7 +56,7 @@ theorem completeness (h : (machine a).accept xs) : Language a xs :=
       apply Language.altR
       exact completeness hr
   | cat a b, zs => by
-    unfold machine at h
+    simp only [machine] at h
     match NFA.cat_exact h with
     | ⟨xs, ys, heq, ha, hb⟩ =>
       rw [heq]
@@ -64,7 +64,7 @@ theorem completeness (h : (machine a).accept xs) : Language a xs :=
       · exact completeness ha
       · exact completeness hb
   | star a, zs => by
-    unfold machine at h
+    simp only [machine] at h
     if hz: zs = [] then
       rw [hz]
       apply Language.starNil
@@ -88,7 +88,7 @@ theorem completeness (h : (machine a).accept xs) : Language a xs :=
             assumption
           exact completeness hy
   | empty, _ => by
-    unfold machine at h
+    simp only [machine] at h
     rw [NFA.false_correct] at h
     contradiction
 termination_by sizeOf a + List.length xs
