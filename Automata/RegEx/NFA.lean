@@ -5,22 +5,22 @@ namespace RegEx
 
 /-- Regular expression language -/
 inductive Language : RegEx α → List α → Prop
-| nil : Language nil []
-| lit {x : α} {s : α → Bool} : s x → Language (lit s) [x]
-| altL {a b : RegEx α} {xs : List α} : Language a xs → Language (alt a b) xs
-| altR {a b : RegEx α} {xs : List α} : Language b xs → Language (alt a b) xs
-| cat {a b : RegEx α} {xs ys : List α} : Language a xs → Language b ys → Language (cat a b) (xs ++ ys)
-| starNil {a : RegEx α} : Language (star a) []
-| starCat {a : RegEx α} {xs ys : List α} : Language a xs → Language (star a) ys → Language (star a) (xs ++ ys)
+  | nil : Language nil []
+  | lit {x : α} {s : α → Bool} : s x → Language (lit s) [x]
+  | altL {a b : RegEx α} {xs : List α} : Language a xs → Language (alt a b) xs
+  | altR {a b : RegEx α} {xs : List α} : Language b xs → Language (alt a b) xs
+  | cat {a b : RegEx α} {xs ys : List α} : Language a xs → Language b ys → Language (cat a b) (xs ++ ys)
+  | starNil {a : RegEx α} : Language (star a) []
+  | starCat {a : RegEx α} {xs ys : List α} : Language a xs → Language (star a) ys → Language (star a) (xs ++ ys)
 
 /-- Regular expresion compiler -/
 def machine : RegEx α → NFA α
-| empty => NFA.false
-| nil => NFA.eps
-| lit s => NFA.lit s
-| alt a b => machine a ||| machine b
-| cat a b => machine a ++ machine b
-| star a => (machine a).star
+  | empty => NFA.false
+  | nil => NFA.eps
+  | lit s => NFA.lit s
+  | alt a b => machine a ||| machine b
+  | cat a b => machine a ++ machine b
+  | star a => (machine a).star
 
 theorem soundness (h : Language a xs) : (machine a).accept xs := by
   induction h with
@@ -93,10 +93,10 @@ theorem completeness (h : (machine a).accept xs) : Language a xs :=
     contradiction
 termination_by sizeOf a + List.length xs
 
-theorem exact (a : RegEx α) (xs : List α) : (machine a).accept xs ↔ Language a xs :=
+theorem exact (xs : List α) : (machine a).accept xs ↔ Language a xs :=
   ⟨completeness, soundness⟩
 
-instance (a : RegEx α) (xs : List α) : Decidable (Language a xs) :=
-  decidable_of_decidable_of_iff (exact a xs)
+instance (xs : List α) : Decidable (Language a xs) :=
+  decidable_of_decidable_of_iff (exact xs)
 
 end RegEx
