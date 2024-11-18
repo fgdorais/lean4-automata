@@ -8,6 +8,8 @@ structure NFA.{u,v} (α : Type v) extends StateType.{u} where
 namespace NFA
 variable (m : NFA α)
 
+protected abbrev size : Nat := Fin.Enum.size m.State
+
 def run : List α → m.State → m.State → Bool
   | [], s, t => decide (s = t)
   | x::xs, s, t => Find.any fun u => m.trans x s u && run xs u t
