@@ -21,11 +21,12 @@ theorem pumping (n : Nat) :
     rw [List.append_assoc]
     rw [List.append_assoc]
     rw [← List.append_assoc]
+    rw[<-List.append_assoc]
     apply ih
-    · exact hx
-    · exact hy
-    · rw [m.run_append]
+    · rw[m.run_append]
       exists t
+    · exact hy
+    · exact hz
 
 @[simp] theorem splitting [Fin.Enum  α] : ws.length ≥ m.size → m.run ws s t → ∃ (u : m.State) (xs ys zs : List α), ws = xs ++ ys ++ zs ∧ ys.length > 0 ∧ m.run xs s u ∧ m.run ys u u ∧ m.run zs u t := by
   intro hw hrun
