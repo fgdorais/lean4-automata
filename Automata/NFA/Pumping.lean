@@ -11,13 +11,13 @@ theorem pumping (n : Nat) :
   induction n using Nat.recAux generalizing xs ys zs with
   | zero =>
     intro hx _ hz
-    rw [List.repeat]
+    rw [List.repeat_zero]
     rw [List.append_nil]
     rw [m.run_append]
     exists t
   | succ n ih =>
     intro hx hy hz
-    rw [List.rep_succ]
+    rw [List.repeat_succ]
     rw [List.append_assoc]
     rw [List.append_assoc]
     rw [← List.append_assoc]
