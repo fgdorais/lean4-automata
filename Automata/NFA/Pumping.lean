@@ -7,11 +7,11 @@ variable (m : NFA α)
 theorem php [Fin.Enum α] (f : Nat → α) : ∃ i j, i < j ∧ j ≤ Fin.Enum.size α ∧ f i = f j := by sorry
 
 theorem pumping (n : Nat) :
-  m.run xs s t → m.run ys t t → m.run zs t u → m.run (xs ++ ys.rep n ++ zs) s u := by
+  m.run xs s t → m.run ys t t → m.run zs t u → m.run (xs ++ ys.repeat n ++ zs) s u := by
   induction n using Nat.recAux generalizing xs ys zs with
   | zero =>
     intro hx _ hz
-    rw [List.rep]
+    rw [List.repeat]
     rw [List.append_nil]
     rw [m.run_append]
     exists t
