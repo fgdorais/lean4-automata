@@ -21,9 +21,9 @@ theorem pumping (n : Nat) :
     rw [List.append_assoc]
     rw [List.append_assoc]
     rw [← List.append_assoc]
-    rw[<-List.append_assoc]
+    rw [← List.append_assoc]
     apply ih
-    · rw[m.run_append]
+    · rw [m.run_append]
       exists t
     · exact hy
     · exact hz
@@ -76,7 +76,7 @@ theorem pumping (n : Nat) :
   induction n generalizing ws with
   | zero => contradiction
   | succ n ih =>
-    if hwslt: ws.length < m.size then
+    if hwslt : ws.length < m.size then
       exists ws
     else
       have hge : ws.length ≥ m.size := Nat.le_of_not_lt hwslt
