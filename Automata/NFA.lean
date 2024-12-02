@@ -7,6 +7,8 @@ import Automata.NFA.Eps
 import Automata.NFA.False
 import Automata.NFA.Lit
 import Automata.NFA.Map
+import Automata.NFA.Pumping
 import Automata.NFA.Reachability
 import Automata.NFA.Star
+import Automata.NFA.Trace
 import Automata.NFA.True

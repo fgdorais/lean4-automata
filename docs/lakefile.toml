@@ -1,0 +1,13 @@
+name = "docs"
+reservoir = false
+buildDir = "."
+packagesDir = "../.lake/packages"
+
+[[require]]
+name = "doc-gen4"
+git = "https://github.com/leanprover/doc-gen4"
+rev = "main"
+
+[[require]]
+name = "lean4-automata"
+path = ".."
