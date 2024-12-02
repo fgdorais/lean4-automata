@@ -1,4 +1,5 @@
 import Automata.NFA.Basic
+import Automata.NFA.Pumping
 
 namespace NFA
 variable (m : NFA α)
@@ -202,7 +203,6 @@ constructor
           rw [←Nat.log2_lt]
           simp
           exact hsize
-
 
 instance (s t : m.State) [Fin.Enum α] : Decidable (∃ xs, m.run xs s t) :=
   if h : m.reach m.size.lg2 s t then
