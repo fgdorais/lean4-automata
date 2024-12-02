@@ -14,15 +14,15 @@ inductive Language : RegEx α → List α → Prop
   | starCat {a : RegEx α} {xs ys : List α} : Language a xs → Language (star a) ys → Language (star a) (xs ++ ys)
 
 /-- Regular expresion compiler -/
-def machine : RegEx α → NFA α
+def compile : RegEx α → NFA α
   | empty => NFA.false
   | nil => NFA.eps
   | lit s => NFA.lit s
-  | alt a b => machine a ||| machine b
-  | cat a b => machine a ++ machine b
-  | star a => (machine a).star
+  | alt a b => compile a ||| compile b
+  | cat a b => compile a ++ compile b
+  | star a => (compile a).star
 
-theorem soundness (h : Language a xs) : (machine a).accept xs := by
+theorem soundness (h : Language a xs) : (compile a).accept xs := by
   induction h with
   | nil => exact NFA.eps_sound rfl
   | lit h => exact NFA.lit_sound _ h
@@ -32,22 +32,22 @@ theorem soundness (h : Language a xs) : (machine a).accept xs := by
   | starNil => exact NFA.star_sound_nil _
   | starCat _ _ ih₁ ih₂ => exact NFA.star_sound_append _ ih₁ ih₂
 
-theorem completeness (h : (machine a).accept xs) : Language a xs :=
+theorem completeness (h : (compile a).accept xs) : Language a xs :=
   match a, xs with
   | nil, zs => by
-    simp only [machine] at h
+    simp only [compile] at h
     rw [NFA.eps_correct] at h
     split at h
     next => exact Language.nil
     next => contradiction
   | lit s, zs => by
-    simp only [machine] at h
+    simp only [compile] at h
     rw [NFA.lit_correct] at h
     split at h
     next x => exact Language.lit h
     next => contradiction
   | alt a b, _ => by
-    simp only [machine] at h
+    simp only [compile] at h
     cases NFA.alt_exact h with
     | inl hl =>
       apply Language.altL
@@ -56,7 +56,7 @@ theorem completeness (h : (machine a).accept xs) : Language a xs :=
       apply Language.altR
       exact completeness hr
   | cat a b, zs => by
-    simp only [machine] at h
+    simp only [compile] at h
     match NFA.cat_exact h with
     | ⟨xs, ys, heq, ha, hb⟩ =>
       rw [heq]
@@ -64,12 +64,12 @@ theorem completeness (h : (machine a).accept xs) : Language a xs :=
       · exact completeness ha
       · exact completeness hb
   | star a, zs => by
-    simp only [machine] at h
+    simp only [compile] at h
     if hz: zs = [] then
       rw [hz]
       apply Language.starNil
     else
-      match NFA.star_exact (machine a) h hz with
+      match NFA.star_exact (compile a) h hz with
       | ⟨xs, ys, hxs, heq, hx, hy⟩ =>
         have : 1 ≤ xs.length := by
           cases xs with
@@ -88,12 +88,12 @@ theorem completeness (h : (machine a).accept xs) : Language a xs :=
             assumption
           exact completeness hy
   | empty, _ => by
-    simp only [machine] at h
+    simp only [compile] at h
     rw [NFA.false_correct] at h
     contradiction
 termination_by sizeOf a + List.length xs
 
-theorem exact (xs : List α) : (machine a).accept xs ↔ Language a xs :=
+theorem exact (xs : List α) : (compile a).accept xs ↔ Language a xs :=
   ⟨completeness, soundness⟩
 
 instance (xs : List α) : Decidable (Language a xs) :=
