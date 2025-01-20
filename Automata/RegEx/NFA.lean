@@ -55,7 +55,7 @@ theorem completeness (h : (compile a).accept xs) : Language a xs :=
       · exact completeness hb
   | star a, zs => by
     simp only [compile] at h
-    if hz: zs = [] then
+    if hz : zs = [] then
       rw [hz]
       apply Language.starNil
     else
@@ -64,18 +64,12 @@ theorem completeness (h : (compile a).accept xs) : Language a xs :=
         have : 1 ≤ xs.length := by
           cases xs with
           | nil => contradiction
-          | cons _ _ =>
-            rw [List.length_cons]
-            apply Nat.succ_le_succ
-            exact Nat.zero_le ..
+          | cons => rw [List.length_cons]; omega
         rw [heq]
         apply Language.starCat
         · exact completeness hx
         · have : 1 + sizeOf a + ys.length < 1 + sizeOf a + zs.length := by
-            rw [heq, List.length_append]
-            apply Nat.add_lt_add_left
-            apply Nat.lt_add_of_pos_left
-            assumption
+            rw [heq, List.length_append]; omega
           exact completeness hy
   | empty, _ => by
     simp only [compile] at h
@@ -83,10 +77,8 @@ theorem completeness (h : (compile a).accept xs) : Language a xs :=
     contradiction
 termination_by sizeOf a + List.length xs
 
-theorem exact (xs : List α) : (compile a).accept xs ↔ Language a xs :=
-  ⟨completeness, soundness⟩
+theorem exact (xs : List α) : (compile a).accept xs ↔ Language a xs := ⟨completeness, soundness⟩
 
-instance (xs : List α) : Decidable (Language a xs) :=
-  decidable_of_decidable_of_iff (exact xs)
+instance (xs : List α) : Decidable (Language a xs) := decidable_of_decidable_of_iff (exact xs)
 
 end RegEx
