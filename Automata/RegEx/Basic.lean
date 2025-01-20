@@ -1,3 +1,4 @@
+import Automata.NFA
 
 /-- Regular expression data type -/
 inductive RegEx (α : Type _) : Type _
@@ -47,3 +48,17 @@ macro_rules
   | `(toRegEx% $a *) => `(RegEx.star (toRegEx% $a))
   | `(toRegEx% ( $a )) => `(toRegEx% $a)
   | `(toRegEx% [ $s ]) => `(RegEx.lit (RegEx.SetRepr.ofString $s))
+
+namespace RegEx
+
+/-- Regular expression language -/
+inductive Language : RegEx α → List α → Prop
+  | nil : Language nil []
+  | lit {x : α} {s : α → Bool} : s x → Language (lit s) [x]
+  | altL {a b : RegEx α} {xs : List α} : Language a xs → Language (alt a b) xs
+  | altR {a b : RegEx α} {xs : List α} : Language b xs → Language (alt a b) xs
+  | cat {a b : RegEx α} {xs ys : List α} : Language a xs → Language b ys → Language (cat a b) (xs ++ ys)
+  | starNil {a : RegEx α} : Language (star a) []
+  | starCat {a : RegEx α} {xs ys : List α} : Language a xs → Language (star a) ys → Language (star a) (xs ++ ys)
+
+end RegEx
