@@ -43,8 +43,7 @@ theorem run_of_reachExact [Find α] : m.reachExact d s t → ∃ xs, xs.length =
   intro hr
   induction d using Nat.recAux generalizing s t with
   | zero =>
-    unfold reachExact at hr
-    simp only [Find.any_iff_exists] at hr
+    simp only [reachExact, Find.any_iff_exists] at hr
     match hr with
     | ⟨x, htrans⟩ =>
       exists [x]
@@ -53,8 +52,7 @@ theorem run_of_reachExact [Find α] : m.reachExact d s t → ∃ xs, xs.length =
       · simp only [run_cons, run_nil, exists_eq_right]
         exact htrans
   | succ d ih =>
-    unfold reachExact at hr
-    simp only [Find.any_iff_exists, Bool.and_eq_true] at hr
+    simp only [reachExact, Find.any_iff_exists, Bool.and_eq_true] at hr
     match hr with
     | ⟨u, hreachsu, hreachut⟩ =>
       match ih hreachsu, ih hreachut with
@@ -75,12 +73,12 @@ theorem reachExact_of_run [Find α] : m.run xs s t → xs.length = 2 ^ d → m.r
     match xs with
     | [] => contradiction
     | [x] =>
+      simp only [reachExact, Find.any_iff_exists]
       simp only [run_cons, run_nil, exists_eq_right] at hrun
-      match hrun with
-      | ⟨_, htrans, rfl⟩ => exists x
+      exists x
     | _::_::_ => injection hxs; contradiction
   | succ d ih =>
-    unfold reachExact
+    simp only [reachExact, Find.any_iff_exists, Bool.and_eq_true]
     rw [←List.take_append_drop (2 ^ d) xs] at hrun
     match m.run_unappend hrun with
     | ⟨u,hrunsu,hrunut⟩ =>
@@ -127,7 +125,7 @@ theorem run_of_reach [Find α] : m.reach d s t → ∃ xs, xs.length < 2 ^ d ∧
       | ⟨s₁, rexact, r⟩ =>
         match ih r with
         | ⟨ys, hlist, hrun⟩ =>
-          match run_of_reachExact m d rexact with
+          match run_of_reachExact m rexact with
           |⟨zs, hrlist, hrrun⟩ =>
             exists zs++ys
             constructor
