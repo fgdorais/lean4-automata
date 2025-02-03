@@ -1,4 +1,5 @@
 import Automata.NFA.Basic
+import Automata.NFA.Pumping
 
 namespace NFA
 variable (m : NFA α)
@@ -27,7 +28,8 @@ theorem run_unappend : m.run (ys ++ xs) s t → ∃ u, m.run ys s u ∧ m.run xs
         · exact hrunys
 
 theorem run_append_eq : m.run (ys ++ xs) s t = Find.any (λ u => m.run ys s u ∧ m.run xs u t) := by
-  simp only [Bool.decide_and, Bool.decide_eq_true]
+  rw [Bool.eq_iff_iff]
+  simp only [Bool.decide_and, Bool.decide_eq_true, Find.any_iff_exists, Bool.and_eq_true]
   constructor
   · exact m.run_unappend
   · intro
@@ -86,7 +88,7 @@ theorem reachExact_of_run [Find α] : m.run xs s t → xs.length = 2 ^ d → m.r
       constructor
       · apply ih hrunsu
         rw [List.length_take, Nat.min_def, hxs]
-        rw [if_pos (Nat.pow_le_pow_of_le_right (Nat.zero_lt _) (Nat.le_add_right _ 1))]
+        rw [if_pos (Nat.pow_le_pow_of_le_right (Nat.zero_lt_succ _) (Nat.le_add_right _ 1))]
       · apply ih hrunut
         rw [List.length_drop, hxs, Nat.pow_succ, Nat.mul_succ, Nat.mul_one, Nat.add_sub_cancel]
 
@@ -102,7 +104,7 @@ theorem run_of_reach [Find α] : m.reach d s t → ∃ xs, xs.length < 2 ^ d ∧
     simp only [decide_eq_true_eq] at hr
     exists []
     constructor
-    · exact Nat.lt
+    · exact Nat.lt_
     · simp only [run_nil]
       rw [hr]
   | succ d ih =>
