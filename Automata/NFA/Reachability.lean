@@ -147,27 +147,24 @@ theorem reach_of_run [Find α] : m.run xs s t → xs.length < 2 ^ d → m.reach 
   | zero =>
     cases xs with
     | nil =>
-      unfold run at hrun
-      unfold reach
-      dec_lift at hrun ⊢
+      simp [run] at hrun
+      simp only [reach, decide_eq_true_eq]
       rw [hrun]
     | cons _ _ => contradiction
   | succ d ih =>
-    unfold reach
-    dec_lift
-    by_cases xs.length < 2 ^ d with
-    | isTrue hxs =>
+    simp only [reach, Bool.or_eq_true, Find.any_iff_exists, Bool.and_eq_true]
+    if hxs : xs.length < 2 ^ d then
       left
       exact ih hrun hxs
-    | isFalse lxs =>
-      have lxs := Nat.le_of_not_gt lxs
+    else
+      have lxs := Nat.le_of_not_gt hxs
       right
       rw [←List.take_append_drop (2 ^ d) xs] at hrun
       match m.run_unappend hrun with
       | ⟨u,hrunsu,hrunut⟩ =>
         exists u
-        constr
-        · apply m.reachExact_of_run d hrunsu
+        constructor
+        · apply m.reachExact_of_run hrunsu
           rw [List.length_take]
           rw [Nat.min_def]
           rw [if_pos lxs]
@@ -175,8 +172,7 @@ theorem reach_of_run [Find α] : m.run xs s t → xs.length < 2 ^ d → m.reach 
           rw [List.length_drop]
           apply Nat.sub_lt_left_of_lt_add
           · exact lxs
-          · rw [Nat.pow_succ, Nat.mul_two] at hxs
-            exact hxs
+          · omega
 
 theorem reach_lg2_iff_reachable [Find α] : m.reach m.size.lg2 s t ↔ ∃ xs, m.run xs s t := by
 constructor
