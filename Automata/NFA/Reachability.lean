@@ -15,8 +15,7 @@ theorem run_unappend : m.run (ys ++ xs) s t → ∃ u, m.run ys s u ∧ m.run xs
     · exact happend
   | cons y ys ih =>
     rw [List.cons_append] at happend
-    unfold run at happend
-    simp only [Find.any_iff_exists, Bool.and_eq_true] at happend
+    simp only [run, Find.any_iff_exists, Bool.and_eq_true] at happend
     match happend with
     | ⟨v, htrans, hrun⟩ =>
       match ih hrun with
@@ -100,16 +99,14 @@ theorem run_of_reach [Find α] : m.reach d s t → ∃ xs, xs.length < 2 ^ d ∧
   intro hr
   induction d using Nat.recAux generalizing s with
   | zero =>
-    unfold reach at hr
-    simp only [decide_eq_true_eq] at hr
+    simp only [reach, decide_eq_true_eq] at hr
     exists []
     constructor
-    · exact Nat.lt_
+    · simp only [List.length_nil, Nat.pow_zero, Nat.lt_add_one]
     · simp only [run_nil]
       rw [hr]
   | succ d ih =>
-    unfold reach at hr
-    simp only [Bool.or_eq_true, Find.any_iff_exists, Bool.and_eq_true] at hr
+    simp only [reach, Bool.or_eq_true, Find.any_iff_exists, Bool.and_eq_true] at hr
     cases hr with
     | inl il =>
       match ih il with
@@ -119,8 +116,7 @@ theorem run_of_reach [Find α] : m.reach d s t → ∃ xs, xs.length < 2 ^ d ∧
         · transitivity (2 ^ d)
           · exact hlist
           · rw [Nat.pow_succ, Nat.mul_succ, Nat.mul_one]
-            apply Nat.lt_add_of_pos_right
-            exact Nat.zero_lt ..
+            omega
         · exact hrun
     | inr ir =>
       match ir with
@@ -193,8 +189,8 @@ constructor
 
 instance (s t : m.State) [Find α] : Decidable (∃ xs, m.run xs s t) :=
   if h : m.reach m.size.lg2 s t then
-    isTrue ((m.reach_lg2_iff_reachable s t).mp h)
+    isTrue ((m.reach_lg2_iff_reachable).mp h)
   else
-    isFalse fun f => h ((m.reach_lg2_iff_reachable s t).mpr f)
+    isFalse fun f => h ((m.reach_lg2_iff_reachable).mpr f)
 
 end NFA
