@@ -170,24 +170,24 @@ theorem reach_of_run [Find α] : m.run xs s t → xs.length < 2 ^ d → m.reach 
           · exact lxs
           · omega
 
-theorem reach_lg2_iff_reachable [Find α] : m.reach m.size.lg2 s t ↔ ∃ xs, m.run xs s t := by
+theorem reach_lg2_iff_reachable [Fin.Enum α] : m.reach m.size.lg2 s t ↔ ∃ xs, m.run xs s t := by
 constructor
 · intro h
   match m.run_of_reach h with
-  | ⟨xs,_,hrun⟩ =>
+  | ⟨xs, _, hrun⟩ =>
     exists xs
 · intro h
   match h with
-  | ⟨_,hrun⟩ =>
+  | ⟨_, hrun⟩ =>
     match m.reachable hrun with
-    | ⟨ys,hlength,hrun⟩ =>
+    | ⟨ys, hlength, hrun⟩ =>
       apply reach_of_run
       · exact hrun
       · calc ys.length
           < m.size := hlength
-        _ < 2 ^ m.size.lg2 := Nat.lt_pow_lg2_self ..
+          _ < 2 ^ m.size.lg2 := Nat.lg2
 
-instance (s t : m.State) [Find α] : Decidable (∃ xs, m.run xs s t) :=
+instance (s t : m.State) [Fin.Enum α] : Decidable (∃ xs, m.run xs s t) :=
   if h : m.reach m.size.lg2 s t then
     isTrue ((m.reach_lg2_iff_reachable).mp h)
   else
