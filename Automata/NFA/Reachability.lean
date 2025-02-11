@@ -183,9 +183,7 @@ constructor
     | ⟨ys, hlength, hrun⟩ =>
       apply reach_of_run
       · exact hrun
-      · calc ys.length
-          < m.size := hlength
-          _ < 2 ^ m.size.lg2 := Nat.lg2
+      · exact Nat.lt_trans hlength (Nat.lt_2_pow_lg2 _)
 
 instance (s t : m.State) [Fin.Enum α] : Decidable (∃ xs, m.run xs s t) :=
   if h : m.reach m.size.lg2 s t then
