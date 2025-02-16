@@ -11,7 +11,7 @@ theorem run_unappend : m.run (ys ++ xs) s t → ∃ u, m.run ys s u ∧ m.run xs
     rw [List.nil_append] at happend
     exists s
     constructor
-    · simp only [NFA.run]; rfl
+    · rw [NFA.run_nil]
     · exact happend
   | cons y ys ih =>
     rw [List.cons_append] at happend
@@ -22,7 +22,7 @@ theorem run_unappend : m.run (ys ++ xs) s t → ∃ u, m.run ys s u ∧ m.run xs
       | ⟨w, hrunxs, hrunys⟩ =>
         exists w
         constructor
-        · simp only [run_cons]
+        · rw [run_cons]
           exists v
         · exact hrunys
 
@@ -42,7 +42,7 @@ def reachExact [Find α] : (d : Nat) → m.State → m.State → Bool
 
 theorem run_of_reachExact [Find α] : m.reachExact d s t → ∃ xs, xs.length = 2 ^ d ∧ m.run xs s t := by
   intro hr
-  induction d using Nat.recAux generalizing s t with
+  induction d generalizing s t with
   | zero =>
     simp only [reachExact, Find.any_iff_exists] at hr
     match hr with
@@ -69,7 +69,7 @@ theorem run_of_reachExact [Find α] : m.reachExact d s t → ∃ xs, xs.length =
 
 theorem reachExact_of_run [Find α] : m.run xs s t → xs.length = 2 ^ d → m.reachExact d s t := by
   intro hrun hxs
-  induction d using Nat.recAux generalizing s t xs with
+  induction d generalizing s t xs with
   | zero =>
     match xs with
     | [] => contradiction
@@ -80,9 +80,9 @@ theorem reachExact_of_run [Find α] : m.run xs s t → xs.length = 2 ^ d → m.r
     | _::_::_ => injection hxs; contradiction
   | succ d ih =>
     simp only [reachExact, Find.any_iff_exists, Bool.and_eq_true]
-    rw [←List.take_append_drop (2 ^ d) xs] at hrun
+    rw [← List.take_append_drop (2 ^ d) xs] at hrun
     match m.run_unappend hrun with
-    | ⟨u,hrunsu,hrunut⟩ =>
+    | ⟨u, hrunsu, hrunut⟩ =>
       exists u
       constructor
       · apply ih hrunsu
@@ -93,17 +93,17 @@ theorem reachExact_of_run [Find α] : m.run xs s t → xs.length = 2 ^ d → m.r
 
 def reach [Find α] : (d : Nat) → m.State → m.State → Bool
 | 0, s, t => t = s
-| d+1, s, t => reach d s t || Find.any (λ u => m.reachExact d s u && reach d u t)
+| d+1, s, t => reach d s t || Find.any fun u => m.reachExact d s u && reach d u t
 
 theorem run_of_reach [Find α] : m.reach d s t → ∃ xs, xs.length < 2 ^ d ∧ m.run xs s t := by
   intro hr
-  induction d using Nat.recAux generalizing s with
+  induction d generalizing s with
   | zero =>
     simp only [reach, decide_eq_true_eq] at hr
     exists []
     constructor
     · simp only [List.length_nil, Nat.pow_zero, Nat.lt_add_one]
-    · simp only [run_nil]
+    · rw [run_nil]
       rw [hr]
   | succ d ih =>
     simp only [reach, Bool.or_eq_true, Find.any_iff_exists, Bool.and_eq_true] at hr
@@ -139,11 +139,11 @@ theorem run_of_reach [Find α] : m.reach d s t → ∃ xs, xs.length < 2 ^ d ∧
 
 theorem reach_of_run [Find α] : m.run xs s t → xs.length < 2 ^ d → m.reach d s t := by
   intro hrun hxs
-  induction d using Nat.recAux generalizing s t xs with
+  induction d generalizing s t xs with
   | zero =>
     cases xs with
     | nil =>
-      simp [run] at hrun
+      rw [run_nil] at hrun
       simp only [reach, decide_eq_true_eq]
       rw [hrun]
     | cons _ _ => contradiction
@@ -157,7 +157,7 @@ theorem reach_of_run [Find α] : m.run xs s t → xs.length < 2 ^ d → m.reach 
       right
       rw [←List.take_append_drop (2 ^ d) xs] at hrun
       match m.run_unappend hrun with
-      | ⟨u,hrunsu,hrunut⟩ =>
+      | ⟨u, hrunsu, hrunut⟩ =>
         exists u
         constructor
         · apply m.reachExact_of_run hrunsu
@@ -187,8 +187,8 @@ constructor
 
 instance (s t : m.State) [Fin.Enum α] : Decidable (∃ xs, m.run xs s t) :=
   if h : m.reach m.size.lg2 s t then
-    isTrue ((m.reach_lg2_iff_reachable).mp h)
+    isTrue <| (m.reach_lg2_iff_reachable).mp h
   else
-    isFalse fun f => h ((m.reach_lg2_iff_reachable).mpr f)
+    isFalse fun f => h <| (m.reach_lg2_iff_reachable).mpr f
 
 end NFA
