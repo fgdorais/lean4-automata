@@ -27,27 +27,28 @@ theorem toNFA_run {start : BitVec m.size} :
       simp only [Find.any_iff_exists, Bool.and_eq_true, NFA.run_nil, exists_eq_right]
       exact hrun
   | cons x xs ih =>
+    rw [Bool.eq_iff_iff]
+    simp only [Find.any_iff_exists, Bool.and_eq_true, NFA.run_cons, Fin.getElem_fin]
     constructor
     · intro ⟨s, hstart, hrun⟩
-      rw [NFA.run_cons] at hrun
       match hrun with
       | ⟨u, htrans, hrun⟩ =>
-        rw [MFA.run_cons]
-        unfold Matrix.mulVecBool
+        rw [Matrix.run_cons]
         rw [←ih]
+        simp only [Find.any_iff_exists, Bool.and_eq_true]
         exists u
         constructor
-        · rw [Vector.get_ofFn]
-          simp
-          exists s
+        · rw [BitMat.combo]
+          simp only [Fin.getElem_fin, BitVec.ofNat_eq_ofNat, BitMat.combo]
+          done
         · exact hrun
     · intro hrun
-      rw [MFA.run_cons] at hrun
-      unfold Matrix.mulVecBool at hrun
+      rw [Matrix.run_cons] at hrun
       rw [←ih] at hrun
+      simp only [Find.any_iff_exists, Bool.and_eq_true] at hrun
       match hrun with
       | ⟨i, htrans, hrun⟩ =>
-        rw [Vector.get_ofFn] at htrans
+        rw [BitMat.combo] at htrans
         simp at htrans
         match htrans with
         | ⟨j, htrans, hstart⟩ =>
@@ -58,18 +59,12 @@ theorem toNFA_run {start : BitVec m.size} :
             exists i
 
 theorem toNFA_correct : m.toNFA.accept xs = m.accept xs := by
-  unfold NFA.accept Matrix.accept
-  simp only [Fin.getElem_fin]
+  simp [NFA.accept, Matrix.accept]
   rw [Bool.eq_iff_iff]
   simp only [Find.any_iff_exists, Bool.and_eq_true, Prod.exists]
   constructor
   · intro ⟨s, t, hrun, hstart, hfinal⟩
-    exists t
-    constructor
-    · exact hfinal
-    · rw [←toNFA_run]
-      simp
-      exists s
+    done
   · intro ⟨t, hfinal, hrun⟩
     rw [←toNFA_run] at hrun
     simp at hrun
