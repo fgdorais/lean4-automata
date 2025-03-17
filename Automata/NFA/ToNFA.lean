@@ -40,6 +40,7 @@ theorem toNFA_run {start : BitVec m.size} :
         constructor
         · rw [BitMat.combo]
           simp only [Fin.getElem_fin, BitVec.ofNat_eq_ofNat, BitMat.combo]
+
           done
         · exact hrun
     · intro hrun
