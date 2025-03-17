@@ -7,12 +7,12 @@ open NFA.Matrix
 
 abbrev toMatrix : Matrix α where
   size := m.size
-  start := BitVec.ofFn fun i => m.start (Fin.Enum.enum i)
-  final := BitVec.ofFn fun i => m.final (Fin.Enum.enum i)
-  trans x := BitMat fun i j => m.trans x (Finite.get m.State j) (Finite.get m.State i)
+  start := BitVec.ofFnLE fun i => m.start (Fin.Enum.enum i)
+  final := BitVec.ofFnLE fun i => m.final (Fin.Enum.enum i)
+  trans x := BitMat.ofFnLE fun i j => m.trans x (Fin.Enum.enum j) (Fin.Enum.enum i)
 
 theorem toMFA_run {start : BitVec m.toMatrix.size Bool} :
-  (m.toMatrix.run xs start)[i] = Fin.any fun t => start[Fin.find t] && m.run xs t (Fin.get m.State i) := by
+  (m.toMatrix.run xs start)[i] = Fin.any fun t => start[Fin.find t] && m.run xs t (Fin.Enum.enum i) := by
   induction xs generalizing start with
   | nil =>
     simp only [Function.const_apply]
