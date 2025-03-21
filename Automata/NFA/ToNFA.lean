@@ -39,6 +39,7 @@ theorem toNFA_run {start : BitVec m.size} :
         exists u
         constructor
         · rw [BitMat.combo]
+
           simp only [Fin.getElem_fin, BitVec.ofNat_eq_ofNat, BitMat.combo]
 
           done
@@ -49,7 +50,7 @@ theorem toNFA_run {start : BitVec m.size} :
       simp only [Find.any_iff_exists, Bool.and_eq_true] at hrun
       match hrun with
       | ⟨i, htrans, hrun⟩ =>
-        rw [BitMat.combo] at htrans
+        simp [BitMat.combo] at htrans
         simp at htrans
         match htrans with
         | ⟨j, htrans, hstart⟩ =>
@@ -65,6 +66,7 @@ theorem toNFA_correct : m.toNFA.accept xs = m.accept xs := by
   simp only [Find.any_iff_exists, Bool.and_eq_true, Prod.exists]
   constructor
   · intro ⟨s, t, hrun, hstart, hfinal⟩
+    simp [BitVec.dot]
     done
   · intro ⟨t, hfinal, hrun⟩
     rw [←toNFA_run] at hrun

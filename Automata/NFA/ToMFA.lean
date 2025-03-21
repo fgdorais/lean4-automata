@@ -9,28 +9,19 @@ abbrev toMatrix : Matrix α where
   size := m.size
   start := BitVec.ofFnLE fun i => m.start (Fin.Enum.enum i)
   final := BitVec.ofFnLE fun i => m.final (Fin.Enum.enum i)
-  trans x := BitMat.ofFnLE fun i j => m.trans x (Fin.Enum.enum j) (Fin.Enum.enum i)
+  trans x := BitMat.ofFn fun i j => m.trans x (Fin.Enum.enum j) (Fin.Enum.enum i)
 
-theorem toMFA_run {start : BitVec m.toMatrix.size Bool} :
-  (m.toMatrix.run xs start)[i] = Fin.any fun t => start[Fin.find t] && m.run xs t (Fin.Enum.enum i) := by
+theorem toMFA_run {start : BitVec m.toMatrix.size} :
+  (m.toMatrix.run xs start)[i] = Find.any fun (t : m.State) => start[Fin.Enum.find t] && m.run xs t (Fin.Enum.enum i) := by
   induction xs generalizing start with
   | nil =>
-    simp only [Function.const_apply]
-    rw [Matrix.run_nil]
-    constructor
-    · intro hstart
-      exists Finite.get m.State i
-      constructor
-      · rw [Finite.find_get]
-        exact hstart
-      · rw [NFA.run_nil]
-    · intro ⟨t, hstart, hrun⟩
-      rw [NFA.run_nil] at hrun
-      rw [hrun, Finite.find_get] at hstart
-      exact hstart
+    rw [Bool.eq_iff_iff]
+    simp only [Fin.getElem_fin, Find.any_iff_exists, Bool.and_eq_true, run_nil, exists_eq_right,
+      Fin.Enum.find_enum, Bool.coe_iff_coe, Matrix.run_nil]
   | cons x xs ih =>
-    rw [Matrix.run_cons, ih]
-    simp?
+    rw [Bool.eq_iff_iff]
+    simp only [Matrix.run_cons, ih, Fin.getElem_fin, Find.any_iff_exists, Bool.and_eq_true,
+      run_cons]
     constructor
     · intro ⟨t, hmat, hrun⟩
       unfold Matrix.mulVecBool at hmat
@@ -65,8 +56,8 @@ theorem toMFA_run {start : BitVec m.toMatrix.size Bool} :
         · exact hrun
 
 theorem toMFA_correct (xs : List α) : m.toMatrix.accept xs = m.accept xs := by
-  unfold Matrix.accept NFA.accept BitVec.dot
-  simp only [Function.const_apply, BitVec.ofNat_eq_ofNat]
+  rw [Bool.eq_iff_iff]
+  simp only [accept_def, BitVec.dot, BitVec.ofNat_eq_ofNat, bne_iff_ne, ne_eq, accept_eq_true_iff]
   constructor
   · intro ⟨i, hfinal, hrun⟩
     rw [Vector.get_ofFn] at hfinal

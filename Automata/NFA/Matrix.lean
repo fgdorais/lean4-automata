@@ -15,7 +15,7 @@ def run : List α → (start : BitVec m.size := m.start) → BitVec m.size
 | [], start => start
 | x::xs, start => run xs (start := (m.trans x).combo start)
 
-theorem run_nil {start : BitVec m.size} : m.run [] start = start := rfl
+@[simp] theorem run_nil {start : BitVec m.size} : m.run [] start = start := rfl
 
 theorem run_cons (x : α) (xs : List α) {start : BitVec m.size} :
     m.run (x :: xs) start = m.run xs ((m.trans x).combo start) := rfl
