@@ -20,10 +20,15 @@ theorem toMFA_run {start : BitVec m.toMatrix.size} :
       Fin.Enum.find_enum, Bool.coe_iff_coe, Matrix.run_nil]
   | cons x xs ih =>
     rw [Bool.eq_iff_iff]
-    simp only [Matrix.run_cons, ih, Fin.getElem_fin, Find.any_iff_exists, Bool.and_eq_true,
-      run_cons]
+    simp only [Matrix.run_cons, ih, Fin.getElem_fin, Find.any_iff_exists, Bool.and_eq_true, run_cons]
     constructor
     · intro ⟨t, hmat, hrun⟩
+      exists t
+      constructor
+      ·
+        done
+      ·
+        done
       unfold Matrix.mulVecBool at hmat
       rw [Vector.get_ofFn] at hmat
       simp? at hmat
@@ -38,16 +43,11 @@ theorem toMFA_run {start : BitVec m.toMatrix.size} :
         · rw [NFA.run_cons]
           exists t
     · intro ⟨t, hstart, hrun⟩
-      rw [NFA.run_cons] at hrun
       match hrun with
       | ⟨u, htrans, hrun⟩ =>
         exists u
         constructor
-        · unfold Matrix.mulVecBool
-          rw [Vector.get_ofFn]
-          simp?
-          exists Finite.find t
-          rw [Matrix.get_ofFn]
+        ·
           rw [Finite.get_find]
           rw [Finite.get_find]
           constructor
@@ -59,8 +59,9 @@ theorem toMFA_correct (xs : List α) : m.toMatrix.accept xs = m.accept xs := by
   rw [Bool.eq_iff_iff]
   simp only [accept_def, BitVec.dot, BitVec.ofNat_eq_ofNat, bne_iff_ne, ne_eq, accept_eq_true_iff]
   constructor
-  · intro ⟨i, hfinal, hrun⟩
-    rw [Vector.get_ofFn] at hfinal
+  ·
+    intro ⟨i, hfinal, hrun⟩
+    rw [BitVec.ofFn] at hfinal
     rw [toMFA_run] at hrun
     simp? at hfinal hrun
     match hrun with
@@ -68,8 +69,8 @@ theorem toMFA_correct (xs : List α) : m.toMatrix.accept xs = m.accept xs := by
       rw [Vector.get_ofFn] at hstart
       rw [Finite.get_find] at hstart
       exists (u, Finite.get m.State i)
-  · intro ⟨(s,t), hrun, hstart, hfinal⟩
-    exists Finite.find t
+  · intro ⟨s, t, hrun, hstart, hfinal⟩
+    simp [BitVec.ofFnLE]
     constructor
     · rw [Vector.get_ofFn]
       rw [Finite.get_find]
