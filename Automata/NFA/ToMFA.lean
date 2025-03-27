@@ -48,7 +48,7 @@ theorem toMFA_run {start : BitVec m.toMatrix.size} :
         exists u
         constructor
         ·
-          rw [Finite.get_find]
+          rw [Fin.Enum.get_find]
           rw [Finite.get_find]
           constructor
           · exact htrans
