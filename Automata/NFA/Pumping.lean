@@ -56,8 +56,8 @@ theorem pumping (n : Nat) :
         _ = (xs ++ ys) ++ zs := by rw [List.take_append_drop i]
       · constructor
         · have : j ≤ ws.length := Nat.le_trans hjs hw
-          rw [List.length_drop i (ws.take j)]
-          rw [List.length_take j ws]
+          rw [List.length_drop]
+          rw [List.length_take]
           rw [Nat.min_eq_left this]
           apply Nat.sub_pos_of_lt hij
         · constructor
@@ -89,7 +89,7 @@ theorem pumping (n : Nat) :
           _ = xs.length + zs.length := by rw [List.length_append]
           _ < (xs.length + ys.length) + zs.length := by apply Nat.add_lt_add_right; apply Nat.lt_add_of_pos_right; exact hys
           _ = (xs ++ ys).length + zs.length := by rw [List.length_append]
-          _ = ((xs ++ ys) ++ zs).length := by rw [List.length_append (xs ++ ys)]
+          _ = ((xs ++ ys) ++ zs).length := by rw [List.length_append (as := xs ++ ys)]
           _ = ws.length := by rw [heq]
           _ ≤ n := by apply Nat.le_of_lt_succ hws
         apply ih hlt hrun
