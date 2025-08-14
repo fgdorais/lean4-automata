@@ -18,10 +18,10 @@ protected def id (m : NFA α) : Bisim m m where
     simp only [decide_eq_true_eq] at h
     rw [h]
   transLR h ht := by
-    simp only [decide_eq_true_eq, Find.any_iff_exists, Bool.and_eq_true, exists_eq_left'] at h
+    simp only [decide_eq_true_eq] at h
     simp [←h, ht]
   transRL h ht := by
-    simp only [decide_eq_true_eq, Find.any_iff_exists, Bool.and_eq_true, exists_eq_left] at h
+    simp only [decide_eq_true_eq] at h
     simp [h, ht]
   final h := by
     simp only [decide_eq_true_eq] at h
